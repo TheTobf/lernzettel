@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { FAECHER } from './faecher'
 import { leseFragen } from './fragen'
-import { APP_ZETTEL, ROH } from './inhalte'
-import { rendere } from './markdown'
+import { APP_ZETTEL, ROH, WOERTERBUCH } from './inhalte'
+import { anzahlAufgaben, rendere } from './markdown'
 import { bezeichnung } from './zettel'
 
 // Prüft alle Lernzettel in inhalte/ – nach dem Anlegen neuer Lernzettel `npm test` ausführen.
@@ -32,11 +32,17 @@ describe('Lernzettel in inhalte/', () => {
         expect(fehlerhaft).toEqual([])
       })
 
-      it('hat einen Test mit mindestens 5 korrekten Multiple-Choice-Fragen', () => {
-        const { fragen, fehler: f } = leseFragen(zettel.inhalt)
-        expect(f).toEqual([])
-        expect(fragen.length).toBeGreaterThanOrEqual(5)
-      })
+      if (zettel.typ === 'blatt') {
+        it('Übungsblatt: enthält Aufgaben', () => {
+          expect(anzahlAufgaben(zettel.inhalt)).toBeGreaterThan(0)
+        })
+      } else {
+        it('hat einen Test mit mindestens 5 korrekten Multiple-Choice-Fragen', () => {
+          const { fragen, fehler: f } = leseFragen(zettel.inhalt)
+          expect(f).toEqual([])
+          expect(fragen.length).toBeGreaterThanOrEqual(5)
+        })
+      }
 
       it('übrig gebliebene $-Zeichen deuten auf kaputte Formeln hin', () => {
         const { html } = rendere(zettel.inhalt)
@@ -51,4 +57,32 @@ describe('Lernzettel in inhalte/', () => {
     const doppelt = schluessel.filter((s, i) => schluessel.indexOf(s) !== i)
     expect(doppelt).toEqual([])
   })
+})
+
+describe('Fachbegriffe in inhalte/<fach>/_begriffe.md', () => {
+  it('es gibt Wörterbücher', () => {
+    expect(Object.keys(WOERTERBUCH).length).toBeGreaterThan(0)
+  })
+
+  for (const [fach, { begriffe, fehler }] of Object.entries(WOERTERBUCH)) {
+    describe(fach, () => {
+      it('gehört zu einem bekannten Fach', () => {
+        expect(FAECHER.map((f) => f.id)).toContain(fach)
+      })
+
+      it('ist vollständig und ohne doppelte Begriffe', () => {
+        expect(fehler).toEqual([])
+        expect(begriffe.length).toBeGreaterThan(0)
+      })
+
+      it('alle Formeln lassen sich darstellen', () => {
+        const kaputt = begriffe.filter((b) => rendere(b.erklaerung).html.includes('katex-error')).map((b) => b.begriff)
+        expect(kaputt).toEqual([])
+      })
+
+      it('Erklärungen sind kurz und einfach (höchstens ~600 Zeichen)', () => {
+        expect(begriffe.filter((b) => b.erklaerung.length > 600).map((b) => b.begriff)).toEqual([])
+      })
+    })
+  }
 })

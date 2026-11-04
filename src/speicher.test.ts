@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { aufraeumen, bereinige, fuehreZusammen, leer, type TestStand } from './speicher'
+import { aufgabenStand, aufraeumen, bereinige, fuehreZusammen, leer, type TestStand } from './speicher'
 
 describe('Speicher', () => {
   it('übernimmt nur gültige Daten', () => {
@@ -48,5 +48,11 @@ describe('Speicher', () => {
     expect(z.tests.a.beste).toBe(0.9)
     expect(z.tests.a.datum).toBe('2026-11-05')
     expect(z.tests.c.beste).toBe(1)
+  })
+  it('Aufgaben-Stand: nur gültige Werte, richtig gezählt, beim Zusammenführen erhalten', () => {
+    const z = bereinige({ aufgaben: { 'b#0': 'gerechnet', 'b#1': 'richtig', 'b#2': 'falsch', 'b#3': 'quatsch' } })
+    expect(z.aufgaben).toEqual({ 'b#0': 'gerechnet', 'b#1': 'richtig', 'b#2': 'falsch' })
+    expect(aufgabenStand(z, 'b', 4)).toEqual({ gerechnet: 3, verglichen: 2, richtig: 1 })
+    expect(fuehreZusammen(leer(), z).aufgaben).toEqual(z.aufgaben)
   })
 })

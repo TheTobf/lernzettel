@@ -4,7 +4,7 @@ import Kopf from '../components/Kopf'
 import Markdown from '../components/Markdown'
 import { datumKey, FAECHER, fachById, findeFach } from '../faecher'
 import { leseFragen } from '../fragen'
-import { rendere } from '../markdown'
+import { anzahlAufgaben, rendere } from '../markdown'
 import { geheZu, pfad } from '../router'
 import { speichereEigenen, useZustand } from '../speicher'
 import { alsMarkdown, baueZettel, bezeichnung, gleicherPlatz, leseKopf, leseTyp, teileText, type Typ, type Zettel } from '../zettel'
@@ -15,6 +15,8 @@ interface Felder {
   uebung: string
   teil: string
   titel: string
+  /** nur Übungsblatt: Tag der Übung */
+  termin: string
 }
 
 /** Erste „# Überschrift“ entfernen – der Titel steht schon oben im Lernzettel. */
@@ -63,6 +65,7 @@ function felderAus(text: string, alt: Felder): Felder {
   else if (kopf.uebung) neu.typ = 'uebung'
   if (kopf.uebung) neu.uebung = kopf.uebung
   if (kopf.teil) neu.teil = kopf.teil
+  if (kopf.termin) neu.termin = kopf.termin
   const titel = kopf.titel || trenneTitel(inhalt).titel
   if (titel) neu.titel = titel
   return neu
@@ -74,8 +77,8 @@ export default function Neu({ bearbeiten }: { bearbeiten?: string }) {
   const [text, setText] = useState(() => (vorhanden ? alsMarkdown(vorhanden) : ''))
   const [felder, setFelder] = useState<Felder>(() =>
     vorhanden
-      ? { fach: vorhanden.fach, typ: vorhanden.typ, uebung: String(vorhanden.uebung ?? ''), teil: String(vorhanden.teil ?? ''), titel: vorhanden.titel }
-      : { fach: FAECHER[0].id, typ: 'uebung', uebung: '', teil: '', titel: '' },
+      ? { fach: vorhanden.fach, typ: vorhanden.typ, uebung: String(vorhanden.uebung ?? ''), teil: String(vorhanden.teil ?? ''), titel: vorhanden.titel, termin: vorhanden.termin ?? '' }
+      : { fach: FAECHER[0].id, typ: 'uebung', uebung: '', teil: '', titel: '', termin: '' },
   )
   const [vorschau, setVorschau] = useState(false)
   const [fehler, setFehler] = useState('')
@@ -121,7 +124,7 @@ export default function Neu({ bearbeiten }: { bearbeiten?: string }) {
     const teil = felder.teil.trim() ? Number(felder.teil.replace(',', '.')) : undefined
     if (!inhalt) return setFehler('Bitte zuerst den Text des Lernzettels einfügen.')
     if (!felder.titel.trim()) return setFehler('Bitte einen Titel eingeben.')
-    if (felder.typ === 'uebung' && (uebung === undefined || !Number.isFinite(uebung))) return setFehler('Bitte die Nummer der Übung eingeben.')
+    if ((felder.typ === 'uebung' || felder.typ === 'blatt') && (uebung === undefined || !Number.isFinite(uebung))) return setFehler('Bitte die Nummer der Übung eingeben.')
     if (teil !== undefined && !Number.isFinite(teil)) return setFehler('Teil muss eine Zahl sein.')
     const kopf = leseKopf(einzeln).kopf
     const zettel: Zettel = {
@@ -129,7 +132,8 @@ export default function Neu({ bearbeiten }: { bearbeiten?: string }) {
       fach: felder.fach,
       typ: felder.typ,
       titel: felder.titel.trim(),
-      uebung: felder.typ === 'uebung' ? uebung : undefined,
+      uebung: felder.typ === 'uebung' || felder.typ === 'blatt' ? uebung : undefined,
+      termin: felder.typ === 'blatt' && /^\d{4}-\d{2}-\d{2}$/.test(felder.termin) ? felder.termin : undefined,
       teil,
       datum: kopf.datum || vorhanden?.datum || datumKey(new Date()),
       kurz: kopf.kurz || vorhanden?.kurz,
@@ -196,7 +200,11 @@ export default function Neu({ bearbeiten }: { bearbeiten?: string }) {
                     </div>
                     <div className="font-medium">{m.zettel.titel || 'Ohne Titel'}</div>
                     <div className="mt-0.5 text-xs text-stone-500">
-                      {m.fragen ? `❓ ${m.fragen} Testfragen` : '⚠️ ohne Test'}
+                      {m.zettel.typ === 'blatt'
+                        ? `✏️ ${anzahlAufgaben(m.zettel.inhalt)} Aufgaben`
+                        : m.fragen
+                          ? `❓ ${m.fragen} Testfragen`
+                          : '⚠️ ohne Test'}
                       {ersetzt ? ' · ersetzt deine ältere Version' : ''}
                     </div>
                     {[...m.blockiert, ...m.hinweise].map((h) => (
@@ -244,11 +252,18 @@ export default function Neu({ bearbeiten }: { bearbeiten?: string }) {
             <span className="mb-1 block px-1 text-sm font-semibold">Art</span>
             <select value={felder.typ} onChange={(e) => setFelder({ ...felder, typ: e.target.value as Typ })} className={feld}>
               <option value="uebung">Übung</option>
+              <option value="blatt">Übungsblatt (Aufgaben)</option>
               <option value="klausur">Klausur-Lernzettel</option>
               <option value="extra">Extra</option>
             </select>
           </label>
-          {felder.typ === 'uebung' && (
+          {felder.typ === 'blatt' && (
+            <label className="col-span-2 block">
+              <span className="mb-1 block px-1 text-sm font-semibold">Tag der Übung (optional)</span>
+              <input type="date" value={felder.termin} onChange={(e) => setFelder({ ...felder, termin: e.target.value })} className={feld} />
+            </label>
+          )}
+          {(felder.typ === 'uebung' || felder.typ === 'blatt') && (
             <label className="block">
               <span className="mb-1 block px-1 text-sm font-semibold">Übung Nr.</span>
               <input inputMode="numeric" value={felder.uebung} onChange={(e) => setFelder({ ...felder, uebung: e.target.value })} className={feld} placeholder="3" />
@@ -262,7 +277,9 @@ export default function Neu({ bearbeiten }: { bearbeiten?: string }) {
 
         {inhalt && (
           <div className="px-1 text-sm">
-            {fragen.fragen.length ? (
+            {felder.typ === 'blatt' ? (
+              <span className="text-stone-600 dark:text-stone-300">✏️ {anzahlAufgaben(inhalt)} Aufgaben erkannt</span>
+            ) : fragen.fragen.length ? (
               <span className="text-stone-600 dark:text-stone-300">❓ {fragen.fragen.length} Testfragen erkannt</span>
             ) : (
               <span className="text-amber-600">⚠️ Keine Testfragen gefunden – der Lernzettel hat dann keinen Test.</span>

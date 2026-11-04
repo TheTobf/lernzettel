@@ -90,6 +90,9 @@ Die **Ableitung** $f'(x)$ gibt die Steigung von $f$ an der Stelle $x$ an – als
 > [!AUFGABE] Aufgabe 1
 > Leite ab: $f(x) = 4\sqrt{x} + \frac{2}{x^3}$
 
+> [!ANSATZ]
+> Schreib Wurzel und Bruch zuerst als Potenzen: $\sqrt{x} = x^{1/2}$ und $\frac{1}{x^3} = x^{-3}$. Dann reicht die Potenzregel.
+
 > [!LOESUNG]
 > Umschreiben: $f(x) = 4x^{1/2} + 2x^{-3}$
 >
@@ -98,6 +101,9 @@ Die **Ableitung** $f'(x)$ gibt die Steigung von $f$ an der Stelle $x$ an – als
 > [!AUFGABE] Aufgabe 2
 > Leite ab: $f(x) = \frac{x^2}{x + 1}$
 
+> [!ANSATZ]
+> Oben und unten steht jeweils eine Funktion von $x$ → Quotientenregel. Lege $u$ und $v$ fest und leite beide ab.
+
 > [!LOESUNG]
 > $u = x^2$, $u' = 2x$, $v = x + 1$, $v' = 1$
 >
@@ -105,6 +111,9 @@ Die **Ableitung** $f'(x)$ gibt die Steigung von $f$ an der Stelle $x$ an – als
 
 > [!AUFGABE] Aufgabe 3
 > Leite ab: $f(x) = \ln(x^2 + 4)$
+
+> [!ANSATZ]
+> Eine Funktion steckt in einer anderen → Kettenregel. Außen: $\ln z$, innen: $z = x^2 + 4$.
 
 > [!LOESUNG]
 > Kettenregel: außen $\ln z \to \frac{1}{z}$, innen $x^2 + 4 \to 2x$

@@ -4,7 +4,8 @@ import Markdown from '../components/Markdown'
 import Ring from '../components/Ring'
 import { datumKey, fachById } from '../faecher'
 import { bewertung, frageKey, leseFragen, mische, waehleFragen, type Frage } from '../fragen'
-import { useAlleZettel } from '../inhalte'
+import { useAlleZettel, useBegriffe } from '../inhalte'
+import type { Begriff } from '../begriffe'
 import { rendere, rendereInline } from '../markdown'
 import { pfad } from '../router'
 import { beantworte, speichereTest, useZustand } from '../speicher'
@@ -52,6 +53,7 @@ export default function Test({ art, id }: { art: 'zettel' | 'fach'; id: string }
   const fach = fachId ? fachById(fachId) : undefined
   const zettel = art === 'zettel' ? alle.find((x) => x.id === id) : undefined
   const testId = art === 'fach' ? `fach:${id}` : id
+  const begriffe = useBegriffe(fachId)
 
   const pool = useMemo<PoolFrage[]>(() => {
     const quellen = art === 'fach' ? reihenfolge(alle, id) : alle.filter((x) => x.id === id)
@@ -91,6 +93,7 @@ export default function Test({ art, id }: { art: 'zettel' | 'fach'; id: string }
             key={`${lauf.fragen[lauf.pos].key}-${lauf.pos}`}
             lauf={lauf}
             mitHerkunft={art === 'fach'}
+            begriffe={begriffe}
             waehle={(wahl) => {
               const f = lauf.fragen[lauf.pos]
               beantworte(f.key, istRichtig(f, wahl))
@@ -109,6 +112,7 @@ export default function Test({ art, id }: { art: 'zettel' | 'fach'; id: string }
         ) : (
           <Ergebnis
             lauf={lauf}
+            begriffe={begriffe}
             beste={stand?.beste}
             zurueckZu={zurueckZu}
             zurueckText={art === 'fach' ? 'Zum Fach' : 'Zum Lernzettel'}
@@ -153,11 +157,13 @@ function Start({ anzahl, lernzettel, beste, starte }: { anzahl: number; lernzett
 function FrageAnsicht({
   lauf,
   mitHerkunft,
+  begriffe,
   waehle,
   weiter,
 }: {
   lauf: Lauf
   mitHerkunft: boolean
+  begriffe: Begriff[]
   waehle: (wahl: number) => void
   weiter: () => void
 }) {
@@ -243,7 +249,7 @@ function FrageAnsicht({
               <span>{f.frage.antworten[wahl].richtig ? '✅ Richtig!' : '❌ Leider falsch'}</span>
             </div>
             <div className="callout-inhalt">
-              <Markdown html={erklaerungHtml} />
+              <Markdown html={erklaerungHtml} begriffe={begriffe} />
             </div>
           </div>
         </div>
@@ -264,12 +270,14 @@ function FrageAnsicht({
 
 function Ergebnis({
   lauf,
+  begriffe,
   beste,
   zurueckZu,
   zurueckText,
   nochmal,
 }: {
   lauf: Lauf
+  begriffe: Begriff[]
   beste?: number
   zurueckZu: string
   zurueckText: string
@@ -319,7 +327,7 @@ function Ergebnis({
           <h2 className="mb-2 px-1 text-sm font-semibold tracking-wide text-stone-500 uppercase">Das solltest du dir nochmal anschauen</h2>
           <div className="space-y-3">
             {falsch.map(({ f, wahl }) => (
-              <FalschKarte key={f.key} f={f} wahl={wahl} />
+              <FalschKarte key={f.key} f={f} wahl={wahl} begriffe={begriffe} />
             ))}
           </div>
         </div>
@@ -328,7 +336,7 @@ function Ergebnis({
   )
 }
 
-function FalschKarte({ f, wahl }: { f: TestFrage; wahl: number | null }) {
+function FalschKarte({ f, wahl, begriffe }: { f: TestFrage; wahl: number | null; begriffe: Begriff[] }) {
   const html = useMemo(
     () => ({
       frage: rendere(f.frage.frage).html,
@@ -357,7 +365,7 @@ function FalschKarte({ f, wahl }: { f: TestFrage; wahl: number | null }) {
         </div>
       </div>
       <div className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-        <Markdown html={html.erklaerung} />
+        <Markdown html={html.erklaerung} begriffe={begriffe} />
       </div>
       <a href={pfad.zettel(f.zettel.id)} className="mt-2 inline-block text-sm font-medium text-(--fach) underline underline-offset-2">
         Im Lernzettel nachlesen

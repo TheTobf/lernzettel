@@ -446,3 +446,135 @@ details.callout:not([open]) {
     animation: none;
   }
 }
+
+/* ---------- Fachbegriffe ---------- */
+
+/* dezent unterstrichen, Schrift bleibt normal (nicht blau) */
+.zettel .begriff {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--c-text) 45%, transparent);
+  text-decoration-skip-ink: none;
+  cursor: pointer;
+  border-radius: 0.2em;
+  transition: background 0.15s;
+}
+
+.zettel .begriff:hover,
+.zettel .begriff:active,
+.zettel .begriff:focus-visible {
+  background: var(--c-flaeche);
+  text-decoration-color: var(--c-text);
+  outline: none;
+}
+
+@keyframes hochfahren {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes ausblenden-rein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hochfahren {
+  animation: hochfahren 0.25s ease-out;
+}
+
+.ausblenden {
+  animation: ausblenden-rein 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hochfahren,
+  .ausblenden {
+    animation: none;
+  }
+}
+
+/* ---------- Aufgaben (Übungsblatt, Selbsttest) ---------- */
+
+.callout-ansatz {
+  --c: #ca8a04;
+}
+.dark .callout-ansatz {
+  --c: #facc15;
+}
+
+.zettel:not(.mit-aufgaben) .aufgabe-status {
+  display: none;
+}
+
+.aufgabe-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+  margin-top: 0.75em;
+  padding-top: 0.65em;
+  border-top: 1px dashed color-mix(in srgb, var(--c) 40%, transparent);
+}
+
+.aufgabe-status button {
+  font-size: 0.82em;
+  font-weight: 600;
+  padding: 0.35em 0.75em;
+  border-radius: 999px;
+  background: var(--c-flaeche);
+  color: var(--c-weich);
+  border: 1.5px solid transparent;
+  transition: all 0.15s;
+}
+
+.aufgabe-status button:active {
+  transform: scale(0.96);
+}
+
+.aufgabe-status button[data-status='gerechnet'][aria-pressed='true'] {
+  background: color-mix(in srgb, #2563eb 14%, transparent);
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.aufgabe-status button[data-status='richtig'][aria-pressed='true'] {
+  background: color-mix(in srgb, #16a34a 14%, transparent);
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.aufgabe-status button[data-status='falsch'][aria-pressed='true'] {
+  background: color-mix(in srgb, #dc2626 12%, transparent);
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.dark .aufgabe-status button[data-status='gerechnet'][aria-pressed='true'] {
+  color: #60a5fa;
+  border-color: #60a5fa;
+}
+.dark .aufgabe-status button[data-status='richtig'][aria-pressed='true'] {
+  color: #4ade80;
+  border-color: #4ade80;
+}
+.dark .aufgabe-status button[data-status='falsch'][aria-pressed='true'] {
+  color: #f87171;
+  border-color: #f87171;
+}
+
+/* erledigte Aufgaben etwas zurücknehmen */
+.callout-aufgabe:has(.aufgabe-status[data-stand='richtig']) {
+  --c: #16a34a;
+}
+.callout-aufgabe:has(.aufgabe-status[data-stand='falsch']) {
+  --c: #dc2626;
+}

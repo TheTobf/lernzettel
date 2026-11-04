@@ -12,6 +12,8 @@ export interface Gerendert {
   abschnitte: Abschnitt[]
   /** Anzahl der Checklisten-Punkte (- [ ] …) */
   haken: number
+  /** Anzahl der Aufgaben ([!AUFGABE]) – jede bekommt Knöpfe „Gerechnet / Stimmt / Falsch“ */
+  aufgaben: number
 }
 
 interface CalloutArt {
@@ -31,6 +33,7 @@ const ARTEN: Record<string, CalloutArt> = {
   TIPP: { titel: 'Klausurtipp', icon: '🎯', klasse: 'tipp' },
   AUFGABE: { titel: 'Aufgabe', icon: '📝', klasse: 'aufgabe' },
   LOESUNG: { titel: 'Lösung anzeigen', icon: '✅', klasse: 'loesung', zu: true },
+  ANSATZ: { titel: 'Tipp zum Ansatz', icon: '🧭', klasse: 'ansatz', zu: true },
   ZUSAMMENFASSUNG: { titel: 'Kurz & knapp', icon: '📌', klasse: 'zusammenfassung' },
   /** Testfrage (Multiple Choice) – erscheint nicht im Text, sondern im Test am Ende */
   FRAGE: { titel: 'Frage', icon: '❓', klasse: 'frage' },
@@ -56,6 +59,8 @@ const ALIAS: Record<string, string> = {
   SELBSTTEST: 'AUFGABE',
   FAZIT: 'ZUSAMMENFASSUNG',
   QUIZ: 'FRAGE',
+  HILFE: 'ANSATZ',
+  HINWEIS: 'ANSATZ',
   MC: 'FRAGE',
   TESTFRAGE: 'FRAGE',
 }
@@ -69,8 +74,10 @@ function calloutArt(name: string): string | undefined {
 interface CalloutToken extends Tokens.Generic {
   type: 'callout'
   art: string
-  /** Text im Kasten ohne „>“ (für Testfragen) */
+  /** Text im Kasten ohne „>“ (für Testfragen und Fachbegriffe) */
   koerper: string
+  /** Titel als Rohtext */
+  titelRoh: string
   titelTokens: Tokens.Generic[]
   tokens: Tokens.Generic[]
 }
@@ -93,6 +100,7 @@ const callout: TokenizerAndRendererExtension = {
       raw: m[0],
       art,
       koerper,
+      titelRoh: m[2].trim(),
       titelTokens: this.lexer.inline(m[2].trim()),
       tokens: [],
     }
@@ -110,7 +118,13 @@ const callout: TokenizerAndRendererExtension = {
     if (art.zu) {
       return `<details class="callout callout-${art.klasse}"><summary>${kopf}</summary><div class="callout-inhalt">${inhalt}</div></details>\n`
     }
-    return `<div class="callout callout-${art.klasse}"><div class="callout-titel">${kopf}</div><div class="callout-inhalt">${inhalt}</div></div>\n`
+    // Aufgaben bekommen Knöpfe für den eigenen Stand; die Nummer setzt rendere() ein
+    const status =
+      token.art === 'AUFGABE'
+        ? '<div class="aufgabe-status" data-aufgabe=""><button type="button" data-status="gerechnet">✏️ Gerechnet</button>' +
+          '<button type="button" data-status="richtig">✓ Stimmt</button><button type="button" data-status="falsch">✗ Falsch</button></div>'
+        : ''
+    return `<div class="callout callout-${art.klasse}"><div class="callout-titel">${kopf}</div><div class="callout-inhalt">${inhalt}</div>${status}</div>\n`
   },
   childTokens: ['titelTokens', 'tokens'],
 }
@@ -160,13 +174,26 @@ export function ohneLeereFragenAbschnitte(tokens: Tokens.Generic[]): Tokens.Gene
 
 const lexerOnly = new Marked({ gfm: true }, markedKatex(KATEX), { extensions: [callout] })
 
-/** Rohtexte aller „> [!FRAGE]“-Kästen (für den Test) */
-export function frageBloecke(md: string): string[] {
-  const bloecke: string[] = []
+/** Alle Kästen einer Art (z. B. „DEFINITION“) mit Titel (Rohtext) und Inhalt ohne „>“ */
+export function calloutBloecke(md: string, art: string): { titel: string; koerper: string }[] {
+  const bloecke: { titel: string; koerper: string }[] = []
   lexerOnly.walkTokens(lexerOnly.lexer(md), (t) => {
-    if (istFrage(t)) bloecke.push((t as CalloutToken).koerper)
+    if (t.type === 'callout' && (t as CalloutToken).art === art) {
+      const c = t as CalloutToken
+      bloecke.push({ titel: c.titelRoh, koerper: c.koerper })
+    }
   })
   return bloecke
+}
+
+/** Anzahl der Aufgaben ([!AUFGABE]) – gleiche Zählung wie in rendere() */
+export function anzahlAufgaben(md: string): number {
+  return calloutBloecke(md, 'AUFGABE').length
+}
+
+/** Rohtexte aller „> [!FRAGE]“-Kästen (für den Test) */
+export function frageBloecke(md: string): string[] {
+  return calloutBloecke(md, 'FRAGE').map((b) => b.koerper)
 }
 
 const inlineMarked = new Marked({ gfm: true }, markedKatex(KATEX))
@@ -222,5 +249,7 @@ export function rendere(md: string): Gerendert {
   )
 
   const html = marked.parse(md, { async: false })
-  return { html, abschnitte, haken }
+  let aufgaben = 0
+  const mitNummern = html.replace(/data-aufgabe=""/g, () => `data-aufgabe="${aufgaben++}"`)
+  return { html: mitNummern, abschnitte, haken, aufgaben }
 }

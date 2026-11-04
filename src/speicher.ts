@@ -6,6 +6,10 @@ import { leseTyp } from './zettel'
 
 export type Design = 'auto' | 'hell' | 'dunkel'
 
+/** Eigener Stand bei einer Aufgabe (Übungsblatt oder Selbsttest) */
+export type AufgabenStatus = 'gerechnet' | 'richtig' | 'falsch'
+const AUFGABEN_STATUS: AufgabenStatus[] = ['gerechnet', 'richtig', 'falsch']
+
 /** Ergebnis eines Tests (Lernzettel-ID oder „fach:<id>“ für den Abschlusstest) */
 export interface TestStand {
   /** letzter Durchgang */
@@ -32,6 +36,8 @@ export interface Zustand {
   tests: Record<string, TestStand>
   /** Statistik pro Testfrage (Schlüssel aus fragen.ts) */
   fragen: Record<string, FrageStat>
+  /** „<Lernzettel-ID>#<Nr.>“ → eigener Stand bei der Aufgabe */
+  aufgaben: Record<string, AufgabenStatus>
   /** Schriftgröße der Lernzettel (1 = normal) */
   schrift: number
   design: Design
@@ -41,7 +47,7 @@ export interface Zustand {
 const KEY = 'lernzettel-v1'
 
 export function leer(): Zustand {
-  return { version: 1, gelesen: {}, haken: {}, klausur: {}, eigene: [], tests: {}, fragen: {}, schrift: 1, design: 'auto' }
+  return { version: 1, gelesen: {}, haken: {}, klausur: {}, eigene: [], tests: {}, fragen: {}, aufgaben: {}, schrift: 1, design: 'auto' }
 }
 
 function istObjekt(x: unknown): x is Record<string, unknown> {
@@ -93,6 +99,11 @@ export function bereinige(roh: unknown): Zustand {
       if (istObjekt(f) && typeof f.r === 'number' && typeof f.f === 'number' && typeof f.zuletzt === 'boolean') {
         z.fragen[k] = { r: f.r, f: f.f, zuletzt: f.zuletzt }
       }
+    }
+  }
+  if (istObjekt(roh.aufgaben)) {
+    for (const [k, v] of Object.entries(roh.aufgaben)) {
+      if (AUFGABEN_STATUS.includes(v as AufgabenStatus)) z.aufgaben[k] = v as AufgabenStatus
     }
   }
   if (typeof roh.schrift === 'number' && roh.schrift >= 0.8 && roh.schrift <= 1.6) z.schrift = roh.schrift
@@ -244,6 +255,35 @@ export function beantworte(key: string, richtig: boolean): void {
   })
 }
 
+export function aufgabenKey(zettelId: string, nr: number): string {
+  return `${zettelId}#${nr}`
+}
+
+/** Stand einer Aufgabe setzen; null löscht ihn. */
+export function setzeAufgabe(zettelId: string, nr: number, status: AufgabenStatus | null): void {
+  aendere((z) => {
+    const aufgaben = { ...z.aufgaben }
+    const k = aufgabenKey(zettelId, nr)
+    if (status) aufgaben[k] = status
+    else delete aufgaben[k]
+    return { ...z, aufgaben }
+  })
+}
+
+/** Wie viele Aufgaben eines Lernzettels/Blatts gerechnet (bzw. schon verglichen) sind */
+export function aufgabenStand(z: Zustand, zettelId: string, anzahl: number): { gerechnet: number; verglichen: number; richtig: number } {
+  let gerechnet = 0
+  let verglichen = 0
+  let richtig = 0
+  for (let i = 0; i < anzahl; i++) {
+    const st = z.aufgaben[aufgabenKey(zettelId, i)]
+    if (st) gerechnet++
+    if (st === 'richtig' || st === 'falsch') verglichen++
+    if (st === 'richtig') richtig++
+  }
+  return { gerechnet, verglichen, richtig }
+}
+
 export function speichereTest(id: string, richtig: number, anzahl: number, datum: string): void {
   aendere((z) => {
     const alt = z.tests[id]
@@ -272,7 +312,7 @@ export function fuehreZusammen(z: Zustand, sicherung: Zustand): Zustand {
     const s = tests[id]
     tests[id] = s ? { ...(t.datum >= s.datum ? t : s), beste: Math.max(t.beste, s.beste), laeufe: Math.max(t.laeufe, s.laeufe) } : t
   }
-  return { ...z, gelesen, eigene, klausur: { ...z.klausur, ...sicherung.klausur }, tests, fragen: { ...sicherung.fragen, ...z.fragen } }
+  return { ...z, gelesen, eigene, klausur: { ...z.klausur, ...sicherung.klausur }, tests, fragen: { ...sicherung.fragen, ...z.fragen }, aufgaben: { ...sicherung.aufgaben, ...z.aufgaben } }
 }
 
 export function ladeSicherung(text: string): { eigene: number; gelesen: number } {

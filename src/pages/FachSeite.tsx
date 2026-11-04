@@ -3,16 +3,19 @@ import Ring from '../components/Ring'
 import ZettelZeile from '../components/ZettelZeile'
 import { fachAktiv, fachById } from '../faecher'
 import { leseFragen } from '../fragen'
-import { useAlleZettel } from '../inhalte'
+import { anzahlAufgaben } from '../markdown'
+import { useAlleZettel, useBegriffe } from '../inhalte'
 import { pfad } from '../router'
-import { istGelesen, setzeKlausur, useZustand } from '../speicher'
+import { aufgabenStand, istGelesen, setzeKlausur, useZustand } from '../speicher'
 import { datumLang, klausurText, tageBis, wochenKey } from '../woche'
+import type { Zettel } from '../zettel'
 import { gliedereFach, reihenfolge, wochenListe } from '../zettel'
 
 export default function FachSeite({ id }: { id: string }) {
   const fach = fachById(id)
   const alle = useAlleZettel()
   const z = useZustand()
+  const begriffe = useBegriffe(fach?.id)
   if (!fach) {
     return (
       <div className="p-6">
@@ -32,6 +35,17 @@ export default function FachSeite({ id }: { id: string }) {
   const mitTest = reihenfolge(alle, fach.id).map((x) => leseFragen(x.inhalt).fragen.length).filter((n) => n > 0)
   const anzahlFragen = mitTest.reduce((a, b) => a + b, 0)
   const abschluss = z.tests[`fach:${fach.id}`]
+
+  function blattZeile(x: Zettel) {
+    const anzahl = anzahlAufgaben(x.inhalt)
+    const st = aufgabenStand(z, x.id, anzahl)
+    const t = x.termin ? tageBis(heute, x.termin) : undefined
+    const wann = t === undefined || t < 0 ? '' : t === 0 ? ' · Übung heute' : t === 1 ? ' · Übung morgen' : ` · Übung am ${datumLang(x.termin!)}`
+    const fortschritt = st.verglichen
+      ? `✏️ ${st.gerechnet}/${anzahl} gerechnet · ✓ ${st.richtig} stimmen`
+      : `✏️ ${st.gerechnet}/${anzahl} Aufgaben gerechnet`
+    return { oben: `📝 Übungsblatt${x.teil ? ` · Teil ${x.teil}` : ''}${wann}`, fortschritt }
+  }
 
   return (
     <div style={{ '--fach': fach.farbe } as React.CSSProperties} className="pb-28">
@@ -74,6 +88,17 @@ export default function FachSeite({ id }: { id: string }) {
           </div>
         )}
 
+        {begriffe.length > 0 && (
+          <a href={pfad.begriffe(fach.id)} className="karte mt-5 flex items-center gap-3 px-4 py-3 transition active:scale-[0.99]">
+            <span className="text-2xl">📖</span>
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold">Fachbegriffe</div>
+              <div className="text-sm text-stone-500 dark:text-stone-400">{begriffe.length} Begriffe einfach erklärt – von den Basics an</div>
+            </div>
+            <span className="text-stone-400">›</span>
+          </a>
+        )}
+
         {/* Klausur-Lernzettel */}
         <section className="mt-6">
           <h2 className="mb-2 px-1 text-sm font-semibold tracking-wide text-stone-500 uppercase">🎯 Klausur-Lernzettel</h2>
@@ -104,12 +129,16 @@ export default function FachSeite({ id }: { id: string }) {
                   <div className="flex items-center gap-2 border-b border-black/5 px-4 py-2.5 dark:border-white/5">
                     <span className="grid size-7 place-items-center rounded-lg bg-(--fach) text-sm font-bold text-white">{u.nr}</span>
                     <span className="font-bold">Übung {u.nr}</span>
-                    {u.zettel.length > 1 && <span className="ml-auto text-xs text-stone-500">{u.zettel.length} Lernzettel</span>}
+                    {u.zettel.filter((x) => x.typ === 'uebung').length > 1 && (
+                      <span className="ml-auto text-xs text-stone-500">{u.zettel.filter((x) => x.typ === 'uebung').length} Lernzettel</span>
+                    )}
                   </div>
                   <div className="divide-y divide-black/5 p-1.5 dark:divide-white/5">
-                    {u.zettel.map((x) => (
-                      <ZettelZeile key={x.id} zettel={x} oben={x.teil ? `Teil ${x.teil}` : ''} />
-                    ))}
+                    {u.zettel.map((x) => {
+                      if (x.typ !== 'blatt') return <ZettelZeile key={x.id} zettel={x} oben={x.teil ? `Teil ${x.teil}` : ''} />
+                      const b = blattZeile(x)
+                      return <ZettelZeile key={x.id} zettel={x} oben={b.oben} ausschnitt={b.fortschritt} />
+                    })}
                   </div>
                 </div>
               ))}
@@ -118,8 +147,9 @@ export default function FachSeite({ id }: { id: string }) {
             leer && (
               <div className="karte p-5 text-sm leading-relaxed">
                 <div className="mb-1 text-base font-bold">Noch keine Lernzettel</div>
-                Schick mir dein Übungsblatt (Foto oder PDF), die Lösungen und die passenden Folien – ich mache daraus Lernzettel mit den
-                wichtigsten Regeln, Beispielen und einer Checkliste. Sie erscheinen dann hier unter der jeweiligen Übung.
+                Schick mir dein Übungsblatt (Foto oder PDF), die Lösungen und die passenden Folien – ich lege die Aufgaben zum Vorrechnen
+                an und mache daraus Lernzettel mit den wichtigsten Regeln, Beispielen und einer Checkliste. Alles erscheint dann hier unter
+                der jeweiligen Übung.
               </div>
             )
           )}

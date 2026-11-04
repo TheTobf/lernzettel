@@ -3,8 +3,9 @@ import { zeigeHinweis } from '../hinweis'
 import Kopf from '../components/Kopf'
 import Markdown from '../components/Markdown'
 import { fachById } from '../faecher'
+import type { AufgabenStatus } from '../speicher'
 import { leseFragen } from '../fragen'
-import { useAlleZettel } from '../inhalte'
+import { useAlleZettel, useBegriffe } from '../inhalte'
 import { rendere } from '../markdown'
 import { geheZu, pfad } from '../router'
 import {
@@ -13,12 +14,15 @@ import {
   loescheEigenen,
   merkeZuletzt,
   setzeGelesen,
+  aufgabenKey,
+  aufgabenStand,
+  setzeAufgabe,
   setzeHaken,
   setzeSchrift,
   useZustand,
   zuletztGelesen,
 } from '../speicher'
-import { datumLang, kwLabel, wochenKey } from '../woche'
+import { datumLang, kwLabel, tageBis, wochenKey } from '../woche'
 import { alsMarkdown, bezeichnung, dateiname, reihenfolge, wochenListe } from '../zettel'
 
 export default function Leser({ id }: { id: string }) {
@@ -28,6 +32,7 @@ export default function Leser({ id }: { id: string }) {
   const gerendert = useMemo(() => (zettel ? rendere(zettel.inhalt) : null), [zettel])
   const anzahlFragen = useMemo(() => (zettel ? leseFragen(zettel.inhalt).fragen.length : 0), [zettel])
   const fortschritt = useLeseFortschritt()
+  const begriffe = useBegriffe(zettel?.fach)
 
   useEffect(() => {
     if (zettel) merkeZuletzt(zettel.id)
@@ -51,6 +56,14 @@ export default function Leser({ id }: { id: string }) {
   const zuletzt = zuletztGelesen(z, zettel.id)
   const haken = z.haken[hakenKey(woche, zettel.id)] ?? []
   const test = z.tests[zettel.id]
+  const istBlatt = zettel.typ === 'blatt'
+  const aufgabenStaende: Record<number, AufgabenStatus> = {}
+  for (let i = 0; i < gerendert.aufgaben; i++) {
+    const st = z.aufgaben[aufgabenKey(zettel.id, i)]
+    if (st) aufgabenStaende[i] = st
+  }
+  const stand = aufgabenStand(z, zettel.id, gerendert.aufgaben)
+  const terminTage = zettel.termin ? tageBis(heute, zettel.termin) : undefined
   const imWochenCheck = wochenListe(alle, zettel.fach, heute).some((x) => x.id === zettel.id)
   const folge = reihenfolge(alle, zettel.fach)
   const pos = folge.findIndex((x) => x.id === zettel.id)
@@ -114,7 +127,17 @@ export default function Leser({ id }: { id: string }) {
           <h1 className="mt-2 text-[1.7rem] leading-tight font-extrabold tracking-tight">{zettel.titel}</h1>
           {zettel.kurz && <p className="mt-1.5 text-stone-600 dark:text-stone-400">{zettel.kurz}</p>}
           <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-stone-500">
-            {zettel.datum && <span>Stand {datumLang(zettel.datum)}</span>}
+            {zettel.termin && (
+              <span className="font-semibold text-(--fach)">
+                📅 Übung {terminTage === 0 ? 'heute' : terminTage === 1 ? 'morgen' : `am ${datumLang(zettel.termin)}`}
+              </span>
+            )}
+            {zettel.datum && !istBlatt && <span>Stand {datumLang(zettel.datum)}</span>}
+            {gerendert.aufgaben > 0 && (
+              <span>
+                ✏️ {stand.gerechnet}/{gerendert.aufgaben} gerechnet
+              </span>
+            )}
             {gerendert.haken > 0 && (
               <span>
                 ☑️ Checkliste {haken.length}/{gerendert.haken}
@@ -148,7 +171,22 @@ export default function Leser({ id }: { id: string }) {
           </details>
         )}
 
-        <Markdown html={gerendert.html} haken={haken} onHaken={hake} />
+        {istBlatt && stand.gerechnet === 0 && (
+          <div className="mb-5 rounded-2xl bg-(--fach)/8 p-4 text-sm leading-relaxed">
+            <b>So gehst du vor:</b> Rechne die Aufgaben vor der Übung auf Papier und tippe bei jeder auf <b>„Gerechnet“</b>. In der
+            Übung vergleichst du und markierst <b>„Stimmt“</b> oder <b>„Falsch“</b>. Tipp und Lösungsvorschlag sind zugeklappt – erst
+            selbst probieren!
+          </div>
+        )}
+
+        <Markdown
+          html={gerendert.html}
+          haken={haken}
+          onHaken={hake}
+          begriffe={begriffe}
+          aufgaben={aufgabenStaende}
+          onAufgabe={(nr, st) => setzeAufgabe(zettel.id, nr, st)}
+        />
 
         {anzahlFragen > 0 && (
           <a href={pfad.test(zettel.id)} className="karte mt-10 flex items-center gap-4 p-4 ring-2 ring-(--fach)/40 transition active:scale-[0.99]">
@@ -164,6 +202,30 @@ export default function Leser({ id }: { id: string }) {
           </a>
         )}
 
+        {istBlatt ? (
+          <section className="karte mt-10 p-4">
+            <div className="mb-2 font-bold">Dein Stand bei Übungsblatt {zettel.uebung}</div>
+            <div className="mb-3 h-2 overflow-hidden rounded-full bg-black/8 dark:bg-white/10">
+              <div className="h-full rounded-full bg-(--fach) transition-all" style={{ width: `${(stand.gerechnet / Math.max(1, gerendert.aufgaben)) * 100}%` }} />
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center text-sm">
+              <div>
+                <div className="text-xl font-extrabold">
+                  {stand.gerechnet}/{gerendert.aufgaben}
+                </div>
+                <div className="text-stone-500">gerechnet</div>
+              </div>
+              <div>
+                <div className="text-xl font-extrabold text-green-600">{stand.richtig}</div>
+                <div className="text-stone-500">stimmen</div>
+              </div>
+              <div>
+                <div className="text-xl font-extrabold text-red-600">{stand.verglichen - stand.richtig}</div>
+                <div className="text-stone-500">falsch</div>
+              </div>
+            </div>
+          </section>
+        ) : (
         <section className={`karte p-4 text-center ${anzahlFragen > 0 ? 'mt-4' : 'mt-10'}`}>
           <button
             type="button"
@@ -180,6 +242,7 @@ export default function Leser({ id }: { id: string }) {
             {fertig ? `Nochmal tippen, um es rückgängig zu machen.` : zuletzt ? `Zuletzt abgehakt in ${kwLabel(zuletzt)}.` : 'Noch nie abgehakt.'}
           </p>
         </section>
+        )}
 
         {zettel.lokal && (
           <section className="mt-4 grid grid-cols-3 gap-2 text-sm">

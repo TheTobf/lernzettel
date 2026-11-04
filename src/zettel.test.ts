@@ -10,6 +10,7 @@ import {
   gleicherPlatz,
   gliedereFach,
   leseKopf,
+  naechsteBlaetter,
   reihenfolge,
   suche,
   teileText,
@@ -172,5 +173,45 @@ describe('Einfügen aus dem Chat', () => {
     expect(gleicherPlatz(z({ id: 'a', uebung: 3, teil: 1 }), z({ id: 'b', uebung: 3, teil: 2 }))).toBe(false)
     expect(gleicherPlatz(z({ id: 'a', uebung: 3 }), z({ id: 'b', uebung: 3, fach: 'externes-rechnungswesen' }))).toBe(false)
     expect(gleicherPlatz(z({ id: 'a', typ: 'extra', titel: 'X' }), z({ id: 'b', typ: 'extra', titel: 'Y' }))).toBe(false)
+  })
+})
+
+describe('Übungsblätter', () => {
+  it('werden erkannt und brauchen eine Übungsnummer', () => {
+    const r = baueZettel('mathe/blatt-04', '---\ntitel: Übungsblatt 4\ntyp: Übungsblatt\nuebung: 4\ntermin: 2026-11-12\n---\nAufgaben', { fach: 'mathe' })
+    expect(r.fehler).toEqual([])
+    expect(r.zettel).toMatchObject({ typ: 'blatt', uebung: 4, termin: '2026-11-12' })
+    expect(bezeichnung(r.zettel)).toBe('Übungsblatt 4')
+    expect(dateiname(r.zettel)).toBe('blatt-04-uebungsblatt-4.md')
+    expect(baueZettel('x', '---\ntitel: B\ntyp: blatt\ntermin: 12.11.\n---\nA', { fach: 'mathe' }).fehler).toEqual([
+      'uebung: Nummer fehlt',
+      'termin „12.11.“ nicht im Format JJJJ-MM-TT',
+    ])
+  })
+
+  it('stehen in der Gruppe ihrer Übung zuerst, aber nicht im Wochen-Check', () => {
+    const alle = [z({ id: 'u4', uebung: 4 }), z({ id: 'b4', typ: 'blatt', uebung: 4 }), z({ id: 'b5', typ: 'blatt', uebung: 5 }), z({ id: 'u1', uebung: 1 })]
+    expect(gliedereFach(alle, 'mathe').uebungen.map((u) => [u.nr, u.zettel.map((x) => x.id)])).toEqual([
+      [1, ['u1']],
+      [4, ['b4', 'u4']],
+      [5, ['b5']],
+    ])
+    expect(wochenListe(alle, 'mathe', new Date(2026, 10, 4)).map((x) => x.id)).toEqual(['u1', 'u4'])
+  })
+
+  it('nächste Übungen: heute bis in 7 Tagen, die nächste zuerst', () => {
+    const alle = [
+      z({ id: 'vorbei', typ: 'blatt', uebung: 1, termin: '2026-11-03' }),
+      z({ id: 'spaeter', typ: 'blatt', uebung: 3, termin: '2026-11-11' }),
+      z({ id: 'heute', typ: 'blatt', uebung: 2, termin: '2026-11-04' }),
+      z({ id: 'weit', typ: 'blatt', uebung: 4, termin: '2026-11-20' }),
+      z({ id: 'ohne', typ: 'blatt', uebung: 5 }),
+    ]
+    expect(naechsteBlaetter(alle, new Date(2026, 10, 4, 18)).map((x) => x.id)).toEqual(['heute', 'spaeter'])
+  })
+
+  it('Termin bleibt beim Exportieren erhalten', () => {
+    const b = z({ id: 'lokal/b', typ: 'blatt', uebung: 2, titel: 'Blatt 2', termin: '2026-11-12', inhalt: 'Aufgaben' })
+    expect(baueZettel('lokal/b', alsMarkdown(b), { lokal: true }).zettel).toEqual({ ...b, lokal: true })
   })
 })

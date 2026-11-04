@@ -10,10 +10,16 @@ claude.ai-Projekte kopiert. Änderungen am Format also immer dort machen.
 
 - Schickt der Nutzer Unterlagen (Folien, Übungsblätter, Lösungen – Foto/PDF), **ohne Nachfrage** daraus Lernzettel
   machen und in die App legen: pro Übung mindestens ein Lernzettel, bei mehreren Themen mehrere Teile.
+- **Jedes neue Übungsblatt sofort als `typ: blatt` anlegen** (alle Aufgaben wörtlich, je ein zugeklappter Ansatz und
+  Lösungsvorschlag, `termin:` = Tag der Übung). Der Nutzer rechnet es am Tag vor der Übung und vergleicht in der Übung.
+  Kommt später die offizielle Lösung, den Lösungsvorschlag damit abgleichen/ersetzen. Dateiname `blatt-04-kurztitel.md`.
 - **Jeder Lernzettel hat am Ende einen Multiple-Choice-Test** (`## Test` mit `[!FRAGE]`-Kästen, 4 Antworten, davon
   1–2 offensichtlich falsch und 1–2 plausibel, mittleres Niveau). Der Abschlusstest pro Fach wird von der App
   automatisch aus allen Fragen gemischt.
 - Vor der Klausur: Klausur-Lernzettel (`typ: klausur`) mit großem Test.
+- **Fachbegriffe** einfach erklärt, von den Basics an: Jeder Begriff, der in einem Lernzettel vorkommt, gehört ins
+  Wörterbuch `inhalte/<fach>/_begriffe.md` (siehe unten). Die App unterstreicht ihn dann automatisch (dezent, nicht
+  blau); Antippen zeigt die Erklärung.
 - Fügt der Nutzer Lernzettel-Text aus einem claude.ai-Projekt ein (beginnt mit `---` und `titel:`), diesen als Datei
   übernehmen (gleiches Fach/Übung/Teil → vorhandene Datei ersetzen).
 
@@ -34,10 +40,32 @@ Neues Fach: in `src/faecher.ts` eintragen und Ordner anlegen.
 Dateinamen (klein, ohne Umlaute):
 
 - Übung: `uebung-03-kurztitel.md`, bei mehreren Lernzetteln zur selben Übung `uebung-03-1-…`, `uebung-03-2-…`
+- Übungsblatt (Aufgaben zum Vorrechnen): `blatt-03-kurztitel.md`
 - Klausur-Lernzettel: `klausur-kurztitel.md` bzw. `klausur-1-…`, `klausur-2-…`
 - Sonstiges: `extra-kurztitel.md`
 
 Vorlage: `inhalte/mathe/extra-beispiel-ableitungsregeln.md`.
+
+## Fachbegriffe-Wörterbuch
+
+Pro Fach `inhalte/<fach>/_begriffe.md` (Dateien mit `_` sind keine Lernzettel):
+
+```markdown
+## Ableitung
+auch: Ableitungen, Ableitungsfunktion
+Ein bis drei einfache Sätze. Formeln mit $…$ erlaubt.
+
+**Beispiel:** …
+```
+
+- Überschrift = Grundform des Begriffs; `auch:` = weitere Schreibweisen, die im Text vorkommen (Plural mit Umlaut,
+  Synonyme, Abkürzungen). Endungen -e/-en/-n/-s/-es erkennt die App selbst. Groß-/Kleinschreibung zählt.
+- Erklärungen einfach halten und bei den Basics anfangen; höchstens ~600 Zeichen.
+- Die bisherigen Einträge sind allgemeine Erklärungen. Definiert die Vorlesung etwas anders, die Erklärung an den
+  Kurs anpassen.
+- Bei jedem neuen Lernzettel: neue Fachbegriffe ergänzen. `[!DEFINITION]`-Kästen aus Lernzetteln landen zusätzlich
+  automatisch im Wörterbuch (der Eintrag in `_begriffe.md` hat Vorrang).
+- Wörter, die auch im Alltag häufig vorkommen (z. B. „soll“), nur mit eindeutiger Schreibweise eintragen.
 
 ## Ablauf (Lernzettel gehen automatisch online)
 
@@ -57,6 +85,8 @@ nach `main` erstellen, den der Nutzer mergt. Lernzettel und Code-Änderungen dah
 ## Technik
 
 Vite + React + TypeScript + Tailwind. Markdown mit `marked` + KaTeX (`src/markdown.ts`; `[!FRAGE]`-Kästen werden dort
-aus dem Lesetext entfernt), Testfragen in `src/fragen.ts`, Test-Ablauf in `src/pages/Test.tsx`. Nutzerdaten
+aus dem Lesetext entfernt), Testfragen in `src/fragen.ts`, Test-Ablauf in `src/pages/Test.tsx`. Fachbegriffe in
+`src/begriffe.ts` (Wörterbuch lesen, im HTML markieren), Fenster `src/components/BegriffFenster.tsx`, Liste
+`src/pages/Begriffe.tsx`. Nutzerdaten
 (Wochen-Check, Testergebnisse, eingefügte Lernzettel) nur lokal im Browser (`src/speicher.ts`). Wochenlogik in
 `src/zettel.ts`/`src/woche.ts`. `npm run dev`, `npm test`, `npm run build`.
