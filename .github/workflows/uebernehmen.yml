@@ -1,0 +1,73 @@
+# Lernzettel automatisch übernehmen:
+# Claude schiebt neue Lernzettel auf einen Branch „claude/…“. Wurden dort nur Dateien in inhalte/ geändert,
+# wird der Branch hier geprüft (npm test), in main übernommen und die App neu veröffentlicht.
+# Änderungen am App-Code werden NICHT automatisch übernommen – die laufen über einen Pull Request.
+name: Lernzettel übernehmen
+
+on:
+  push:
+    branches: ['claude/**']
+
+permissions:
+  contents: write # in main übernehmen
+  actions: write # Veröffentlichen (deploy.yml) anstoßen
+
+concurrency:
+  group: lernzettel-uebernehmen
+  cancel-in-progress: false
+
+jobs:
+  uebernehmen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Nur Lernzettel geändert?
+        id: pruefen
+        run: |
+          git fetch origin main
+          geaendert=$(git diff --name-only origin/main...HEAD)
+          echo "Geänderte Dateien:"
+          echo "$geaendert"
+          if [ -z "$geaendert" ]; then
+            echo "::notice::Nichts Neues gegenüber main."
+            echo "uebernehmen=false" >> "$GITHUB_OUTPUT"
+          elif echo "$geaendert" | grep -qv '^inhalte/'; then
+            echo "::notice::Es wurde mehr als nur Lernzettel geändert – bitte per Pull Request übernehmen."
+            echo "uebernehmen=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "uebernehmen=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Mit main zusammenführen
+        if: steps.pruefen.outputs.uebernehmen == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B main origin/main
+          git merge --no-edit "$GITHUB_SHA" -m "Lernzettel übernommen aus $GITHUB_REF_NAME"
+
+      - uses: actions/setup-node@v4
+        if: steps.pruefen.outputs.uebernehmen == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      # Prüft alle Lernzettel (Kopfbereich, Formeln, Testfragen) im zusammengeführten Stand
+      - if: steps.pruefen.outputs.uebernehmen == 'true'
+        run: npm ci
+      - if: steps.pruefen.outputs.uebernehmen == 'true'
+        run: npm test
+
+      - name: In main übernehmen
+        if: steps.pruefen.outputs.uebernehmen == 'true'
+        run: git push origin main
+
+      # Pushes mit dem Actions-Token starten keine weiteren Workflows – daher Veröffentlichen direkt anstoßen.
+      - name: App veröffentlichen
+        if: steps.pruefen.outputs.uebernehmen == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main

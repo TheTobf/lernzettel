@@ -36,9 +36,10 @@ Funktioniert offline und lässt sich wie eine App auf den Startbildschirm legen.
 
 ## Neue Lernzettel
 
-1. **In Claude Code (dauerhaft, auf allen Geräten):** Übungsblatt, Lösungen und Folien schicken und z. B. sagen:
-   „Mach mir Lernzettel für Mathe Übung 4.“ Claude legt sie mit Test in `inhalte/<fach>/` ab und pusht sie.
-   Sobald der Stand auf `main` ist, baut GitHub die App neu – in der App erscheint „Neue Lernzettel sind da“.
+1. **In Claude Code mit diesem Repo (automatisch, auf allen Geräten):** Übungsblatt, Lösungen und Folien schicken und
+   z. B. sagen: „Mach mir Lernzettel für Mathe Übung 4.“ Claude legt sie mit Test in `inhalte/<fach>/` ab und pusht
+   sie. Der Workflow „Lernzettel übernehmen“ prüft sie, übernimmt sie in `main` und veröffentlicht die App – ohne
+   Pull Request. In der App erscheint „Neue Lernzettel sind da“.
 2. **In deinen Claude-Projekten (Mathematik, Externes Rechnungswesen, Internationales Management):** einmalig die
    Projektanweisung aus der App (Mehr → Claude-Projekte verbinden) ins Projekt kopieren. Danach Unterlagen hochladen,
    Claudes Antwort kopieren und in der App unter ➕ Einfügen einsetzen.
@@ -57,5 +58,6 @@ npm run build
 ```
 
 Deployment: `.github/workflows/deploy.yml` testet und baut die App bei jedem Push auf `main` und veröffentlicht sie
-auf GitHub Pages. Einmalig im Repo: **Settings → Pages → Source: „GitHub Actions“** (Pages ist für öffentliche Repos
+auf GitHub Pages. `.github/workflows/uebernehmen.yml` übernimmt Branches `claude/…`, in denen nur Lernzettel
+(`inhalte/`) geändert wurden, automatisch nach `main`; App-Code-Änderungen laufen über Pull Requests. Einmalig im Repo: **Settings → Pages → Source: „GitHub Actions“** (Pages ist für öffentliche Repos
 kostenlos).

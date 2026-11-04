@@ -39,13 +39,20 @@ Dateinamen (klein, ohne Umlaute):
 
 Vorlage: `inhalte/mathe/extra-beispiel-ableitungsregeln.md`.
 
-## Ablauf
+## Ablauf (Lernzettel gehen automatisch online)
 
 1. Datei(en) anlegen.
 2. `npm test` – prüft Kopfbereich, doppelte Übungsnummern, ob alle Formeln darstellbar sind und ob
    jeder Lernzettel einen Test mit mindestens 5 korrekten Fragen hat.
-3. Committen und pushen. Online (GitHub Pages) erscheinen die Lernzettel, sobald der Stand auf `main` ist; die App zeigt
-   dann „Neue Lernzettel sind da“.
+3. Committen und auf den Session-Branch `claude/…` pushen – **kein Pull Request nötig**. Der Workflow
+   „Lernzettel übernehmen“ (`.github/workflows/uebernehmen.yml`) prüft den Branch, übernimmt ihn in `main` und
+   veröffentlicht die App, **wenn nur Dateien in `inhalte/` geändert wurden**. Die App zeigt dann
+   „Neue Lernzettel sind da“. Der Nutzer will das so: Lernzettel sollen ohne sein Zutun in der App landen.
+4. Danach kurz prüfen, ob die Workflow-Läufe „Lernzettel übernehmen“ und „Deploy“ grün sind; bei Rot den Fehler beheben
+   und erneut pushen.
+
+Änderungen am App-Code (alles außerhalb von `inhalte/`) werden nicht automatisch übernommen: dafür einen Pull Request
+nach `main` erstellen, den der Nutzer mergt. Lernzettel und Code-Änderungen daher in getrennten Commits/Branches.
 
 ## Technik
 
