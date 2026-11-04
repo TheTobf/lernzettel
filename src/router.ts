@@ -35,6 +35,7 @@ export const pfad = {
   abschluss: (fach: string) => `#/abschluss/${encodeURIComponent(fach)}`,
   neu: (bearbeiten?: string) => (bearbeiten ? `#/neu?bearbeiten=${encodeURIComponent(bearbeiten)}` : '#/neu'),
   mehr: () => '#/mehr',
+  begriffe: (fach: string) => `#/begriffe/${encodeURIComponent(fach)}`,
 }
 
 export function geheZu(hash: string): void {

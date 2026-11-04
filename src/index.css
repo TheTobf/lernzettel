@@ -446,3 +446,59 @@ details.callout:not([open]) {
     animation: none;
   }
 }
+
+/* ---------- Fachbegriffe ---------- */
+
+/* dezent unterstrichen, Schrift bleibt normal (nicht blau) */
+.zettel .begriff {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--c-text) 45%, transparent);
+  text-decoration-skip-ink: none;
+  cursor: pointer;
+  border-radius: 0.2em;
+  transition: background 0.15s;
+}
+
+.zettel .begriff:hover,
+.zettel .begriff:active,
+.zettel .begriff:focus-visible {
+  background: var(--c-flaeche);
+  text-decoration-color: var(--c-text);
+  outline: none;
+}
+
+@keyframes hochfahren {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes ausblenden-rein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hochfahren {
+  animation: hochfahren 0.25s ease-out;
+}
+
+.ausblenden {
+  animation: ausblenden-rein 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hochfahren,
+  .ausblenden {
+    animation: none;
+  }
+}

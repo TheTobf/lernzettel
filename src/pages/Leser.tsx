@@ -4,7 +4,7 @@ import Kopf from '../components/Kopf'
 import Markdown from '../components/Markdown'
 import { fachById } from '../faecher'
 import { leseFragen } from '../fragen'
-import { useAlleZettel } from '../inhalte'
+import { useAlleZettel, useBegriffe } from '../inhalte'
 import { rendere } from '../markdown'
 import { geheZu, pfad } from '../router'
 import {
@@ -28,6 +28,7 @@ export default function Leser({ id }: { id: string }) {
   const gerendert = useMemo(() => (zettel ? rendere(zettel.inhalt) : null), [zettel])
   const anzahlFragen = useMemo(() => (zettel ? leseFragen(zettel.inhalt).fragen.length : 0), [zettel])
   const fortschritt = useLeseFortschritt()
+  const begriffe = useBegriffe(zettel?.fach)
 
   useEffect(() => {
     if (zettel) merkeZuletzt(zettel.id)
@@ -148,7 +149,7 @@ export default function Leser({ id }: { id: string }) {
           </details>
         )}
 
-        <Markdown html={gerendert.html} haken={haken} onHaken={hake} />
+        <Markdown html={gerendert.html} haken={haken} onHaken={hake} begriffe={begriffe} />
 
         {anzahlFragen > 0 && (
           <a href={pfad.test(zettel.id)} className="karte mt-10 flex items-center gap-4 p-4 ring-2 ring-(--fach)/40 transition active:scale-[0.99]">

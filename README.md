@@ -14,6 +14,8 @@ Funktioniert offline und lässt sich wie eine App auf den Startbildschirm legen.
 - **Pro Fach:** Klausur-Lernzettel oben, darunter alle Übungen – pro Übung ein oder mehrere Lernzettel (Teil 1, Teil 2, …).
 - **Lernzettel lesen:** Formeln, farbige Kästen (Merke, Definition, Formel, Beispiel, Achtung, Klausurtipp),
   Selbsttest mit zugeklappten Lösungen, Inhaltsverzeichnis, Schrift größer/kleiner, hell/dunkel.
+- **Fachbegriffe:** In den Lernzetteln dezent unterstrichen – antippen zeigt eine einfache Erklärung. Pro Fach gibt es
+  eine Liste aller Begriffe (von den Basics an) mit Suche.
 - **Checkliste „Das kann ich“:** zum Abhaken – fängt jede Woche neu an. Alles abgehakt = Lernzettel für diese Woche erledigt.
 - **Test nach jedem Lernzettel:** Multiple Choice mit 4 Antworten, sofortiges Feedback mit Erklärung, Auswertung,
   „Falsche nochmal üben“, bestes Ergebnis wird gespeichert.

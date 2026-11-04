@@ -67,6 +67,16 @@ Checkliste „Das kann ich“ (wird in der App jede Woche neu abgehakt):
 Außerdem: Tabellen (auf dem Handy seitlich wischbar), nummerierte Listen für Rechenwege, `**fett**` für
 Schlüsselbegriffe. Codeblöcke im Lernzettel mit `~~~sql` … `~~~` schreiben (nicht mit Backticks).
 
+## Fachbegriffe
+
+Die App unterstreicht Fachbegriffe in allen Lernzetteln automatisch; Antippen zeigt eine einfache Erklärung.
+Jeder `[!DEFINITION]`-Kasten wird dafür ins Fachbegriffe-Wörterbuch des Fachs übernommen. Deshalb:
+
+- Jeden **neuen Fachbegriff** einmal als `[!DEFINITION]`-Kasten erklären. Der Titel ist **nur der Begriff**
+  (Grundform, ohne Zusätze): `> [!DEFINITION] Bilanz`
+- Die Erklärung **einfach** halten: 1–3 kurze Sätze in Alltagssprache, dann gern ein Mini-Beispiel. Keine Begriffe
+  voraussetzen, die selbst noch nicht erklärt sind – lieber bei den Basics anfangen.
+
 ## Aufbau eines Übungs-Lernzettels
 
 1. `## Worum geht's?` – 2–4 Sätze: Thema, wozu man es braucht, Bezug zur Vorlesung

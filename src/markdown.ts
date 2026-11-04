@@ -69,8 +69,10 @@ function calloutArt(name: string): string | undefined {
 interface CalloutToken extends Tokens.Generic {
   type: 'callout'
   art: string
-  /** Text im Kasten ohne „>“ (für Testfragen) */
+  /** Text im Kasten ohne „>“ (für Testfragen und Fachbegriffe) */
   koerper: string
+  /** Titel als Rohtext */
+  titelRoh: string
   titelTokens: Tokens.Generic[]
   tokens: Tokens.Generic[]
 }
@@ -93,6 +95,7 @@ const callout: TokenizerAndRendererExtension = {
       raw: m[0],
       art,
       koerper,
+      titelRoh: m[2].trim(),
       titelTokens: this.lexer.inline(m[2].trim()),
       tokens: [],
     }
@@ -160,13 +163,21 @@ export function ohneLeereFragenAbschnitte(tokens: Tokens.Generic[]): Tokens.Gene
 
 const lexerOnly = new Marked({ gfm: true }, markedKatex(KATEX), { extensions: [callout] })
 
-/** Rohtexte aller „> [!FRAGE]“-Kästen (für den Test) */
-export function frageBloecke(md: string): string[] {
-  const bloecke: string[] = []
+/** Alle Kästen einer Art (z. B. „DEFINITION“) mit Titel (Rohtext) und Inhalt ohne „>“ */
+export function calloutBloecke(md: string, art: string): { titel: string; koerper: string }[] {
+  const bloecke: { titel: string; koerper: string }[] = []
   lexerOnly.walkTokens(lexerOnly.lexer(md), (t) => {
-    if (istFrage(t)) bloecke.push((t as CalloutToken).koerper)
+    if (t.type === 'callout' && (t as CalloutToken).art === art) {
+      const c = t as CalloutToken
+      bloecke.push({ titel: c.titelRoh, koerper: c.koerper })
+    }
   })
   return bloecke
+}
+
+/** Rohtexte aller „> [!FRAGE]“-Kästen (für den Test) */
+export function frageBloecke(md: string): string[] {
+  return calloutBloecke(md, 'FRAGE').map((b) => b.koerper)
 }
 
 const inlineMarked = new Marked({ gfm: true }, markedKatex(KATEX))

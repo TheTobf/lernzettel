@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { FAECHER } from './faecher'
 import { leseFragen } from './fragen'
-import { APP_ZETTEL, ROH } from './inhalte'
+import { APP_ZETTEL, ROH, WOERTERBUCH } from './inhalte'
 import { rendere } from './markdown'
 import { bezeichnung } from './zettel'
 
@@ -51,4 +51,32 @@ describe('Lernzettel in inhalte/', () => {
     const doppelt = schluessel.filter((s, i) => schluessel.indexOf(s) !== i)
     expect(doppelt).toEqual([])
   })
+})
+
+describe('Fachbegriffe in inhalte/<fach>/_begriffe.md', () => {
+  it('es gibt Wörterbücher', () => {
+    expect(Object.keys(WOERTERBUCH).length).toBeGreaterThan(0)
+  })
+
+  for (const [fach, { begriffe, fehler }] of Object.entries(WOERTERBUCH)) {
+    describe(fach, () => {
+      it('gehört zu einem bekannten Fach', () => {
+        expect(FAECHER.map((f) => f.id)).toContain(fach)
+      })
+
+      it('ist vollständig und ohne doppelte Begriffe', () => {
+        expect(fehler).toEqual([])
+        expect(begriffe.length).toBeGreaterThan(0)
+      })
+
+      it('alle Formeln lassen sich darstellen', () => {
+        const kaputt = begriffe.filter((b) => rendere(b.erklaerung).html.includes('katex-error')).map((b) => b.begriff)
+        expect(kaputt).toEqual([])
+      })
+
+      it('Erklärungen sind kurz und einfach (höchstens ~600 Zeichen)', () => {
+        expect(begriffe.filter((b) => b.erklaerung.length > 600).map((b) => b.begriff)).toEqual([])
+      })
+    })
+  }
 })

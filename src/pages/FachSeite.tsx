@@ -3,7 +3,7 @@ import Ring from '../components/Ring'
 import ZettelZeile from '../components/ZettelZeile'
 import { fachAktiv, fachById } from '../faecher'
 import { leseFragen } from '../fragen'
-import { useAlleZettel } from '../inhalte'
+import { useAlleZettel, useBegriffe } from '../inhalte'
 import { pfad } from '../router'
 import { istGelesen, setzeKlausur, useZustand } from '../speicher'
 import { datumLang, klausurText, tageBis, wochenKey } from '../woche'
@@ -13,6 +13,7 @@ export default function FachSeite({ id }: { id: string }) {
   const fach = fachById(id)
   const alle = useAlleZettel()
   const z = useZustand()
+  const begriffe = useBegriffe(fach?.id)
   if (!fach) {
     return (
       <div className="p-6">
@@ -72,6 +73,17 @@ export default function FachSeite({ id }: { id: string }) {
           <div className="karte mt-5 p-4 text-sm">
             🔒 <b>{fach.name}</b> startet am <b>{datumLang(fach.ab)}</b>. Ab dann kommen hier die Lernzettel zu den Übungen rein.
           </div>
+        )}
+
+        {begriffe.length > 0 && (
+          <a href={pfad.begriffe(fach.id)} className="karte mt-5 flex items-center gap-3 px-4 py-3 transition active:scale-[0.99]">
+            <span className="text-2xl">📖</span>
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold">Fachbegriffe</div>
+              <div className="text-sm text-stone-500 dark:text-stone-400">{begriffe.length} Begriffe einfach erklärt – von den Basics an</div>
+            </div>
+            <span className="text-stone-400">›</span>
+          </a>
         )}
 
         {/* Klausur-Lernzettel */}

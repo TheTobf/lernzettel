@@ -1,16 +1,22 @@
-import { useEffect, useMemo, useRef, type MouseEvent } from 'react'
+import { useEffect, useMemo, useRef, type KeyboardEvent, type MouseEvent } from 'react'
+import { zeigeBegriff } from '../begriffAnzeige'
+import { markiereBegriffe, type Begriff } from '../begriffe'
 
 interface Props {
   html: string
   /** abgehakte Checklisten-Punkte */
   haken?: number[]
   onHaken?: (nr: number, an: boolean) => void
+  /** Fachbegriffe, die im Text unterstrichen und antippbar werden */
+  begriffe?: Begriff[]
+  /** diesen Begriff nicht markieren (z. B. in seiner eigenen Erklärung) */
+  ausser?: string
 }
 
-/** Zeigt gerendertes Markdown an und macht Checklisten und interne Sprungmarken bedienbar. */
-export default function Markdown({ html, haken = [], onHaken }: Props) {
+/** Zeigt gerendertes Markdown an und macht Checklisten, Fachbegriffe und interne Sprungmarken bedienbar. */
+export default function Markdown({ html, haken = [], onHaken, begriffe, ausser }: Props) {
   const ref = useRef<HTMLDivElement>(null)
-  const inhalt = useMemo(() => ({ __html: html }), [html])
+  const inhalt = useMemo(() => ({ __html: begriffe?.length ? markiereBegriffe(html, begriffe, ausser) : html }), [html, begriffe, ausser])
   const hakenKey = haken.join(',')
 
   useEffect(() => {
@@ -19,10 +25,22 @@ export default function Markdown({ html, haken = [], onHaken }: Props) {
       el.checked = an.has(Number(el.dataset.haken))
       el.disabled = !onHaken
     })
-  }, [html, hakenKey, onHaken])
+  }, [inhalt, hakenKey, onHaken])
+
+  function oeffneBegriff(el: Element): boolean {
+    const b = begriffe?.find((x) => x.id === (el as HTMLElement).dataset.begriff)
+    if (b && begriffe) zeigeBegriff(b, begriffe)
+    return !!b
+  }
 
   function klick(e: MouseEvent<HTMLDivElement>) {
     const ziel = e.target as HTMLElement
+    const begriff = ziel.closest('.begriff')
+    if (begriff) {
+      e.preventDefault()
+      oeffneBegriff(begriff)
+      return
+    }
     const link = ziel.closest('a')
     if (link) {
       const href = link.getAttribute('href') ?? ''
@@ -45,5 +63,13 @@ export default function Markdown({ html, haken = [], onHaken }: Props) {
     if (box) onHaken(Number(box.dataset.haken), box.checked)
   }
 
-  return <div ref={ref} className="zettel" onClick={klick} dangerouslySetInnerHTML={inhalt} />
+  function taste(e: KeyboardEvent<HTMLDivElement>) {
+    const begriff = (e.target as HTMLElement).closest('.begriff')
+    if (begriff && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault()
+      oeffneBegriff(begriff)
+    }
+  }
+
+  return <div ref={ref} className="zettel" onClick={klick} onKeyDown={taste} dangerouslySetInnerHTML={inhalt} />
 }
