@@ -18,8 +18,10 @@ kurz: Ein Satz, worum es geht (erscheint in der Liste).
 ```
 
 - `fach`: `mathe`, `externes-rechnungswesen`, `internationales-management` oder `wirtschaftsinformatik`
-- `typ`: `uebung` (Lernzettel zu einer Übung), `klausur` (Klausur-Lernzettel = Zusammenfassung) oder `extra`
-- `uebung`: Nummer der Übung wie auf dem Übungsblatt – Pflicht bei `typ: uebung`
+- `typ`: `uebung` (Lernzettel zu einer Übung), `blatt` (Aufgaben eines Übungsblatts zum Vorrechnen),
+  `klausur` (Klausur-Lernzettel = Zusammenfassung) oder `extra`
+- `uebung`: Nummer der Übung wie auf dem Übungsblatt – Pflicht bei `typ: uebung` und `typ: blatt`
+- `termin`: nur bei `typ: blatt` – Tag der Übung (JJJJ-MM-TT), falls bekannt. Die App erinnert dann am Tag davor.
 - `teil`: nur wenn es mehrere Lernzettel zur selben Übung (bzw. mehrere Klausur-Lernzettel) gibt: 1, 2, …
 - `datum`: Stand im Format JJJJ-MM-TT
 - Titel mit Doppelpunkt in Anführungszeichen: `titel: "Bilanz: Aufbau"`
@@ -44,6 +46,7 @@ Kästen – jede Zeile beginnt mit `>`, ein eigener Titel hinter dem Typ ist opt
 | `[!ACHTUNG]` | typische Fehler und Fallen |
 | `[!TIPP]` | Klausurtipp, Eselsbrücke |
 | `[!AUFGABE]` | Selbsttest-Aufgabe (zum Selberrechnen) |
+| `[!ANSATZ]` | Tipp zum Ansatz – zugeklappt, für wenn man nicht weiterkommt |
 | `[!LOESUNG]` | Lösung dazu – zugeklappt, erst nach Antippen sichtbar |
 | `[!ZUSAMMENFASSUNG]` | „Kurz & knapp“ |
 | `[!FRAGE]` | Multiple-Choice-Testfrage (siehe „Test“) |
@@ -119,6 +122,39 @@ sondern als Test am Ende des Lernzettels; der **Abschlusstest** eines Fachs misc
   Lernzettel beantworten lassen.
 - Erklärung: 1–3 Sätze – warum die Antwort stimmt und warum die plausibelste Falle falsch ist.
 - Anzahl: Übungs-Lernzettel **6–10 Fragen** (mindestens 5), Klausur-Lernzettel **15–25 Fragen**.
+
+## Übungsblatt (`typ: blatt`) – zum Vorrechnen vor der Übung
+
+Sobald ein neues Übungsblatt da ist, kommen seine Aufgaben als eigenes „Übungsblatt“ in die App. So kann der Nutzer
+sie am Tag vor der Übung rechnen und in der Übung nur noch vergleichen. Jede `[!AUFGABE]` bekommt in der App die Knöpfe
+„Gerechnet“, „Stimmt“ und „Falsch“.
+
+```markdown
+---
+titel: Übungsblatt 4 – Ableitungen
+fach: mathe
+typ: blatt
+uebung: 4
+termin: 2026-11-12
+datum: 2026-11-10
+---
+
+> [!AUFGABE] Aufgabe 1a
+> Bestimmen Sie die Ableitung von $f(x) = x^3 \cdot e^{2x}$.
+
+> [!ANSATZ]
+> Produkt aus zwei Funktionen → Produktregel; für $e^{2x}$ zusätzlich die Kettenregel.
+
+> [!LOESUNG] Lösungsvorschlag
+> $f'(x) = 3x^2 e^{2x} + x^3 \cdot 2e^{2x} = x^2 e^{2x}\,(3 + 2x)$
+```
+
+- **Alle** Aufgaben vollständig und **wörtlich** übernehmen (inkl. Teilaufgaben a, b, c … als eigene `[!AUFGABE]`),
+  mit allen Zahlen, Tabellen und Angaben – so, dass man sie ohne das Original-Blatt rechnen kann.
+- Pro Aufgabe ein `[!ANSATZ]` (nur der erste Schritt bzw. welche Regel – nicht die Lösung verraten) und ein
+  `[!LOESUNG] Lösungsvorschlag` mit vollständigem Rechenweg. Alles nachrechnen.
+- Gibt es die offizielle Lösung der Übung, den Lösungsvorschlag damit abgleichen und als `[!LOESUNG] Lösung` ersetzen.
+- Kein Test (`[!FRAGE]`) nötig – der kommt in den Lernzettel zur Übung.
 
 ## Klausur-Lernzettel (vor der Klausur)
 

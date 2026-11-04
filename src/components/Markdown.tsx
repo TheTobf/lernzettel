@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, type KeyboardEvent, type MouseEvent } from 'react'
 import { zeigeBegriff } from '../begriffAnzeige'
 import { markiereBegriffe, type Begriff } from '../begriffe'
+import type { AufgabenStatus } from '../speicher'
 
 interface Props {
   html: string
@@ -11,10 +12,13 @@ interface Props {
   begriffe?: Begriff[]
   /** diesen Begriff nicht markieren (z. B. in seiner eigenen Erklärung) */
   ausser?: string
+  /** eigener Stand pro Aufgabe (Nr. → Status) */
+  aufgaben?: Record<number, AufgabenStatus>
+  onAufgabe?: (nr: number, status: AufgabenStatus | null) => void
 }
 
 /** Zeigt gerendertes Markdown an und macht Checklisten, Fachbegriffe und interne Sprungmarken bedienbar. */
-export default function Markdown({ html, haken = [], onHaken, begriffe, ausser }: Props) {
+export default function Markdown({ html, haken = [], onHaken, begriffe, ausser, aufgaben, onAufgabe }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const inhalt = useMemo(() => ({ __html: begriffe?.length ? markiereBegriffe(html, begriffe, ausser) : html }), [html, begriffe, ausser])
   const hakenKey = haken.join(',')
@@ -27,6 +31,16 @@ export default function Markdown({ html, haken = [], onHaken, begriffe, ausser }
     })
   }, [inhalt, hakenKey, onHaken])
 
+  const aufgabenKey = JSON.stringify(aufgaben ?? {})
+  useEffect(() => {
+    const stand = JSON.parse(aufgabenKey) as Record<string, AufgabenStatus>
+    ref.current?.querySelectorAll<HTMLElement>('.aufgabe-status').forEach((el) => {
+      const st = stand[el.dataset.aufgabe ?? ''] ?? ''
+      el.dataset.stand = st
+      el.querySelectorAll<HTMLButtonElement>('button[data-status]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.status === st)))
+    })
+  }, [inhalt, aufgabenKey])
+
   function oeffneBegriff(el: Element): boolean {
     const b = begriffe?.find((x) => x.id === (el as HTMLElement).dataset.begriff)
     if (b && begriffe) zeigeBegriff(b, begriffe)
@@ -35,6 +49,13 @@ export default function Markdown({ html, haken = [], onHaken, begriffe, ausser }
 
   function klick(e: MouseEvent<HTMLDivElement>) {
     const ziel = e.target as HTMLElement
+    const knopf = ziel.closest<HTMLButtonElement>('.aufgabe-status button[data-status]')
+    if (knopf) {
+      const nr = Number(knopf.closest<HTMLElement>('.aufgabe-status')?.dataset.aufgabe)
+      const status = knopf.dataset.status as AufgabenStatus
+      if (onAufgabe && Number.isInteger(nr)) onAufgabe(nr, aufgaben?.[nr] === status ? null : status)
+      return
+    }
     const begriff = ziel.closest('.begriff')
     if (begriff) {
       e.preventDefault()
@@ -71,5 +92,7 @@ export default function Markdown({ html, haken = [], onHaken, begriffe, ausser }
     }
   }
 
-  return <div ref={ref} className="zettel" onClick={klick} onKeyDown={taste} dangerouslySetInnerHTML={inhalt} />
+  return (
+    <div ref={ref} className={`zettel ${onAufgabe ? 'mit-aufgaben' : ''}`} onClick={klick} onKeyDown={taste} dangerouslySetInnerHTML={inhalt} />
+  )
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { rendere } from './markdown'
+import { anzahlAufgaben, rendere } from './markdown'
 
 describe('Markdown', () => {
   it('rendert Kästen mit eigenem und Standard-Titel', () => {
@@ -74,3 +74,24 @@ describe('Testfragen im Text', () => {
     expect(r.html).toContain('Erst lesen!')
   })
 })
+
+describe('Aufgaben', () => {
+  const md = '> [!AUFGABE] Aufgabe 1a\n> Rechne $2+2$.\n\n> [!ANSATZ]\n> Zähle.\n\n> [!LOESUNG] Lösungsvorschlag\n> $4$\n\n> [!AUFGABE] Aufgabe 1b\n> Noch eine.'
+
+  it('jede Aufgabe bekommt nummerierte Knöpfe, Tipp und Lösung sind zugeklappt', () => {
+    const r = rendere(md)
+    expect(r.aufgaben).toBe(2)
+    expect(anzahlAufgaben(md)).toBe(2)
+    expect(r.html).toContain('data-aufgabe="0"')
+    expect(r.html).toContain('data-aufgabe="1"')
+    expect(r.html).toContain('data-status="gerechnet"')
+    expect(r.html).toContain('<details class="callout callout-ansatz"><summary>')
+    expect(r.html).toContain('Tipp zum Ansatz')
+    expect(r.html).toContain('<span>Lösungsvorschlag</span>')
+  })
+
+  it('andere Kästen bekommen keine Knöpfe', () => {
+    expect(rendere('> [!BEISPIEL]\n> x').html).not.toContain('aufgabe-status')
+  })
+})
+

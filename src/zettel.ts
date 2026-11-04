@@ -1,7 +1,10 @@
 import { FAECHER, fachAktiv, fachById, findeFach } from './faecher'
 
-/** uebung = Lernzettel zu einer Übung, klausur = Klausur-Zusammenfassung, extra = alles andere */
-export type Typ = 'uebung' | 'klausur' | 'extra'
+/**
+ * uebung = Lernzettel zu einer Übung, blatt = Aufgaben eines Übungsblatts (zum Vorrechnen),
+ * klausur = Klausur-Zusammenfassung, extra = alles andere
+ */
+export type Typ = 'uebung' | 'blatt' | 'klausur' | 'extra'
 
 export interface Zettel {
   id: string
@@ -12,6 +15,8 @@ export interface Zettel {
   teil?: number
   /** Stand (JJJJ-MM-TT) */
   datum?: string
+  /** Übungsblatt: Tag der Übung (JJJJ-MM-TT) – am Tag davor rechnen */
+  termin?: string
   /** Ein Satz, worum es geht – erscheint in der Liste */
   kurz?: string
   /** Markdown ohne Kopfzeilen */
@@ -45,7 +50,8 @@ export function entferneCodeRahmen(text: string): string {
 
 export function leseTyp(wert: string | undefined): Typ | undefined {
   const w = (wert ?? '').trim().toLowerCase()
-  if (['uebung', 'übung', 'ubung', 'tutorium', 'aufgabe'].includes(w)) return 'uebung'
+  if (['uebung', 'übung', 'ubung', 'tutorium'].includes(w)) return 'uebung'
+  if (['blatt', 'uebungsblatt', 'übungsblatt', 'arbeitsblatt', 'aufgaben', 'aufgabe', 'aufgabenblatt'].includes(w)) return 'blatt'
   if (['klausur', 'zusammenfassung', 'klausur-zusammenfassung', 'pruefung', 'prüfung'].includes(w)) return 'klausur'
   if (['extra', 'thema', 'beispiel', 'vorlesung', 'sonstiges'].includes(w)) return 'extra'
   return undefined
@@ -84,26 +90,29 @@ export function baueZettel(
   else if (opt.fach && kopf.fach && findeFach(kopf.fach)?.id !== opt.fach) fehler.push(`fach: „${kopf.fach}“ passt nicht zum Ordner „${opt.fach}“`)
   let typ = leseTyp(kopf.typ)
   if (!typ) {
-    if (kopf.typ) fehler.push(`Unbekannter typ „${kopf.typ}“ (erlaubt: uebung, klausur, extra)`)
-    else fehler.push('typ fehlt (uebung, klausur oder extra)')
+    if (kopf.typ) fehler.push(`Unbekannter typ „${kopf.typ}“ (erlaubt: uebung, blatt, klausur, extra)`)
+    else fehler.push('typ fehlt (uebung, blatt, klausur oder extra)')
     typ = kopf.uebung ? 'uebung' : 'extra'
   }
   const uebung = zahl(kopf.uebung)
-  if (typ === 'uebung' && uebung === undefined) fehler.push('uebung: Nummer fehlt')
+  if ((typ === 'uebung' || typ === 'blatt') && uebung === undefined) fehler.push('uebung: Nummer fehlt')
   const teil = zahl(kopf.teil)
   const titel = kopf.titel || titelAusText(inhalt) || ''
   if (!titel) fehler.push('titel fehlt')
   const datum = kopf.datum || kopf.stand || undefined
   if (datum && !/^\d{4}-\d{2}-\d{2}$/.test(datum)) fehler.push(`datum „${datum}“ nicht im Format JJJJ-MM-TT`)
+  const termin = kopf.termin || undefined
+  if (termin && !/^\d{4}-\d{2}-\d{2}$/.test(termin)) fehler.push(`termin „${termin}“ nicht im Format JJJJ-MM-TT`)
   return {
     zettel: {
       id,
       fach: fach?.id ?? opt.fach ?? opt.standardFach ?? 'mathe',
       typ,
       titel: titel || id.split('/').pop() || id,
-      uebung: typ === 'uebung' ? uebung : undefined,
+      uebung: typ === 'uebung' || typ === 'blatt' ? uebung : undefined,
       teil,
       datum,
+      termin: typ === 'blatt' ? termin : undefined,
       kurz: kopf.kurz || kopf.beschreibung || undefined,
       inhalt: inhalt.trim(),
       lokal: opt.lokal ?? false,
@@ -171,7 +180,7 @@ export function ausPfad(pfad: string): { fach: string; id: string } {
   return { fach, id: `${fach}/${datei}` }
 }
 
-const TYP_REIHENFOLGE: Record<Typ, number> = { klausur: 0, uebung: 1, extra: 2 }
+const TYP_REIHENFOLGE: Record<Typ, number> = { klausur: 0, blatt: 1, uebung: 2, extra: 3 }
 
 export function vergleiche(a: Zettel, b: Zettel): number {
   return (
@@ -197,12 +206,13 @@ export interface FachInhalt {
 export function gliedereFach(alle: Zettel[], fach: string): FachInhalt {
   const eigene = alle.filter((z) => z.fach === fach).sort(vergleiche)
   const uebungen: UebungsGruppe[] = []
-  for (const z of eigene.filter((z) => z.typ === 'uebung')) {
+  for (const z of eigene.filter((z) => z.typ === 'uebung' || z.typ === 'blatt')) {
     const nr = z.uebung ?? 0
     const g = uebungen.find((u) => u.nr === nr)
     if (g) g.zettel.push(z)
     else uebungen.push({ nr, zettel: [z] })
   }
+  uebungen.sort((a, b) => a.nr - b.nr)
   return {
     klausur: eigene.filter((z) => z.typ === 'klausur'),
     uebungen,
@@ -224,7 +234,18 @@ export function wochenListe(alle: Zettel[], fach: string, heute: Date): Zettel[]
   const f = fachById(fach)
   if (!f || !fachAktiv(f, heute)) return []
   const g = gliedereFach(alle, fach)
-  return g.klausur.length ? g.klausur : g.uebungen.flatMap((u) => u.zettel)
+  return g.klausur.length ? g.klausur : g.uebungen.flatMap((u) => u.zettel.filter((z) => z.typ === 'uebung'))
+}
+
+/** Übungsblätter, deren Übung heute oder in den nächsten Tagen ist (zuerst die nächste). */
+export function naechsteBlaetter(alle: Zettel[], heute: Date, tage = 7): Zettel[] {
+  const p = (n: number) => String(n).padStart(2, '0')
+  const key = (d: Date) => `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+  const bis = new Date(heute)
+  bis.setDate(bis.getDate() + tage)
+  return alle
+    .filter((z) => z.typ === 'blatt' && z.termin && z.termin >= key(heute) && z.termin <= key(bis))
+    .sort((a, b) => a.termin!.localeCompare(b.termin!) || vergleiche(a, b))
 }
 
 export function wochenListeAlle(alle: Zettel[], heute: Date): Zettel[] {
@@ -235,6 +256,7 @@ export function wochenListeAlle(alle: Zettel[], heute: Date): Zettel[] {
 export function bezeichnung(z: Zettel): string {
   const teil = z.teil ? ` · Teil ${z.teil}` : ''
   if (z.typ === 'uebung') return `Übung ${z.uebung ?? '?'}${teil}`
+  if (z.typ === 'blatt') return `Übungsblatt ${z.uebung ?? '?'}${teil}`
   if (z.typ === 'klausur') return `Klausur-Lernzettel${teil}`
   return `Extra${teil}`
 }
@@ -283,6 +305,7 @@ export function alsMarkdown(z: Zettel): string {
   if (z.uebung !== undefined) zeilen.push(`uebung: ${z.uebung}`)
   if (z.teil !== undefined) zeilen.push(`teil: ${z.teil}`)
   if (z.datum) zeilen.push(`datum: ${z.datum}`)
+  if (z.termin) zeilen.push(`termin: ${z.termin}`)
   if (z.kurz) zeilen.push(`kurz: ${z.kurz}`)
   zeilen.push('---', '', z.inhalt, '')
   return zeilen.join('\n')
@@ -301,6 +324,7 @@ export function dateiname(z: Zettel): string {
     .slice(0, 40)
   const teil = z.teil ? `-${z.teil}` : ''
   if (z.typ === 'uebung') return `uebung-${String(z.uebung ?? 0).padStart(2, '0')}${teil}-${slug}.md`
+  if (z.typ === 'blatt') return `blatt-${String(z.uebung ?? 0).padStart(2, '0')}${teil}-${slug}.md`
   if (z.typ === 'klausur') return `klausur${teil}-${slug}.md`
   return `extra${teil}-${slug}.md`
 }

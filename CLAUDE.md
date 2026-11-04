@@ -10,6 +10,9 @@ claude.ai-Projekte kopiert. Änderungen am Format also immer dort machen.
 
 - Schickt der Nutzer Unterlagen (Folien, Übungsblätter, Lösungen – Foto/PDF), **ohne Nachfrage** daraus Lernzettel
   machen und in die App legen: pro Übung mindestens ein Lernzettel, bei mehreren Themen mehrere Teile.
+- **Jedes neue Übungsblatt sofort als `typ: blatt` anlegen** (alle Aufgaben wörtlich, je ein zugeklappter Ansatz und
+  Lösungsvorschlag, `termin:` = Tag der Übung). Der Nutzer rechnet es am Tag vor der Übung und vergleicht in der Übung.
+  Kommt später die offizielle Lösung, den Lösungsvorschlag damit abgleichen/ersetzen. Dateiname `blatt-04-kurztitel.md`.
 - **Jeder Lernzettel hat am Ende einen Multiple-Choice-Test** (`## Test` mit `[!FRAGE]`-Kästen, 4 Antworten, davon
   1–2 offensichtlich falsch und 1–2 plausibel, mittleres Niveau). Der Abschlusstest pro Fach wird von der App
   automatisch aus allen Fragen gemischt.
@@ -37,6 +40,7 @@ Neues Fach: in `src/faecher.ts` eintragen und Ordner anlegen.
 Dateinamen (klein, ohne Umlaute):
 
 - Übung: `uebung-03-kurztitel.md`, bei mehreren Lernzetteln zur selben Übung `uebung-03-1-…`, `uebung-03-2-…`
+- Übungsblatt (Aufgaben zum Vorrechnen): `blatt-03-kurztitel.md`
 - Klausur-Lernzettel: `klausur-kurztitel.md` bzw. `klausur-1-…`, `klausur-2-…`
 - Sonstiges: `extra-kurztitel.md`
 
