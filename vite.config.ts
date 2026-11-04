@@ -4,8 +4,8 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { defineConfig } from 'vite'
 
-// GitHub Pages liefert die App unter /kotoba-dojo/lernzettel/ aus (neben Kotoba Dojo).
-const base = process.env.GITHUB_PAGES ? '/kotoba-dojo/lernzettel/' : '/'
+// GitHub Pages liefert die App unter /<repo-name>/ aus; der Deploy-Workflow setzt BASE_PATH.
+const base = process.env.BASE_PATH || '/'
 
 export default defineConfig({
   base,

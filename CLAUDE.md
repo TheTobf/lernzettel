@@ -19,7 +19,7 @@ claude.ai-Projekte kopiert. Änderungen am Format also immer dort machen.
 
 ## Wohin?
 
-Ein Lernzettel = eine Markdown-Datei in `lernzettel/inhalte/<fach>/`. Der Ordner bestimmt das Fach
+Ein Lernzettel = eine Markdown-Datei in `inhalte/<fach>/`. Der Ordner bestimmt das Fach
 (`fach:` im Kopf ist optional, muss aber zum Ordner passen).
 
 | Ordner | Modul | Hinweis |
@@ -42,7 +42,7 @@ Vorlage: `inhalte/mathe/extra-beispiel-ableitungsregeln.md`.
 ## Ablauf
 
 1. Datei(en) anlegen.
-2. `cd lernzettel && npm test` – prüft Kopfbereich, doppelte Übungsnummern, ob alle Formeln darstellbar sind und ob
+2. `npm test` – prüft Kopfbereich, doppelte Übungsnummern, ob alle Formeln darstellbar sind und ob
    jeder Lernzettel einen Test mit mindestens 5 korrekten Fragen hat.
 3. Committen und pushen. Online (GitHub Pages) erscheinen die Lernzettel, sobald der Stand auf `main` ist; die App zeigt
    dann „Neue Lernzettel sind da“.

@@ -3,7 +3,7 @@
 Handy-App für deine Lernzettel – nach Fach und Übung sortiert, mit Klausur-Lernzettel und Wochen-Check.
 Funktioniert offline und lässt sich wie eine App auf den Startbildschirm legen.
 
-**Adresse:** <https://thetobf.github.io/kotoba-dojo/lernzettel/>
+**Adresse:** <https://thetobf.github.io/lernzettel/>
 
 ## Fächer
 
@@ -34,8 +34,6 @@ Funktioniert offline und lässt sich wie eine App auf den Startbildschirm legen.
 - **iPhone:** Adresse in Safari öffnen → Teilen-Symbol → „Zum Home-Bildschirm“.
 - **Android:** Adresse in Chrome öffnen → Menü ⋮ → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“.
 
-Falls beim allerersten Öffnen Kotoba Dojo statt der Lernzettel erscheint: einmal neu laden.
-
 ## Neue Lernzettel
 
 1. **In Claude Code (dauerhaft, auf allen Geräten):** Übungsblatt, Lösungen und Folien schicken und z. B. sagen:
@@ -52,12 +50,12 @@ Format und Regeln für die Lernzettel stehen in [`FORMAT.md`](FORMAT.md), die Ar
 ## Entwickeln
 
 ```bash
-cd lernzettel
 npm install
 npm run dev     # http://localhost:5173
 npm test        # prüft auch alle Lernzettel in inhalte/
 npm run build
 ```
 
-Deployment: `.github/workflows/deploy.yml` baut Kotoba Dojo und die Lernzettel-App bei jedem Push auf `main`
-und veröffentlicht die Lernzettel unter `/kotoba-dojo/lernzettel/`.
+Deployment: `.github/workflows/deploy.yml` testet und baut die App bei jedem Push auf `main` und veröffentlicht sie
+auf GitHub Pages. Einmalig im Repo: **Settings → Pages → Source: „GitHub Actions“** (Pages ist für öffentliche Repos
+kostenlos).
