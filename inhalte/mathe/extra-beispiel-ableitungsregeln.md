@@ -2,7 +2,7 @@
 titel: "Beispiel: Ableitungsregeln"
 typ: extra
 datum: 2026-11-04
-kurz: So sieht ein Lernzettel aus – mit Regeln, Beispielen, Selbsttest und Checkliste.
+kurz: So sieht ein Lernzettel aus – mit Regeln, Beispielen, Selbsttest, Checkliste und Multiple-Choice-Test.
 ---
 
 > [!MERKE] Das ist ein Beispiel-Lernzettel
