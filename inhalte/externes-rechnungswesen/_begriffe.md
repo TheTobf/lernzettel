@@ -81,7 +81,7 @@ auch: Forderung, Forderungen aus Lieferungen und Leistungen
 Geld, das andere dem Unternehmen noch schulden – meist Kunden, die auf Rechnung gekauft haben. Gehört zum Umlaufvermögen (Aktivseite).
 
 ## Verbindlichkeiten
-auch: Verbindlichkeit, Verbindlichkeiten aus Lieferungen und Leistungen
+auch: Verbindlichkeit, Verbindlichkeiten aus Lieferungen und Leistungen, Lieferantenverbindlichkeiten, Verbindlichkeiten gegenüber Kreditinstituten
 Geld, das das Unternehmen anderen noch schuldet – z. B. Lieferanten oder der Bank. Gehört zum Fremdkapital (Passivseite).
 
 ## Rückstellungen
@@ -118,7 +118,7 @@ auch: Bestandskonten
 Ein Konto, das aus einem Bilanzposten entsteht. **Aktive** Bestandskonten (Vermögen, z. B. Bank) haben den Anfangsbestand und die Zugänge im Soll; **passive** Bestandskonten (Kapital, z. B. Darlehen) haben sie im Haben.
 
 ## Erfolgskonto
-auch: Erfolgskonten
+auch: Erfolgskonten, Aufwandskonto, Aufwandskonten, Ertragskonto, Ertragskonten
 Ein Konto für Aufwand oder Ertrag. Erfolgskonten sind Unterkonten des Eigenkapitals und werden über die GuV abgeschlossen.
 
 ## Aufwand
@@ -203,3 +203,67 @@ Umsatzsteuer minus Vorsteuer: der Betrag, der tatsächlich ans Finanzamt überwi
 
 ## Jahresabschluss
 Der Abschluss am Ende des Geschäftsjahres: Bilanz und GuV (§ 242 HGB). Kapitalgesellschaften brauchen zusätzlich einen Anhang, mittelgroße und große auch einen Lagebericht.
+
+## Erhaltene Anzahlungen
+auch: erhaltene Anzahlungen, Anzahlung, Anzahlungen
+Geld, das ein Kunde **im Voraus** bezahlt hat. Bis zur Lieferung ist es eine **Schuld** des Unternehmens (Passivseite) – es schuldet ja noch die Leistung.
+
+## Buchwert
+Der Wert, mit dem ein Gegenstand gerade in der Buchhaltung steht (Anschaffungskosten minus bisherige Abschreibungen). Verkauft man genau zum Buchwert, entsteht weder Gewinn noch Verlust.
+
+## Hypothekenverbindlichkeiten
+auch: Hypothek, Hypothekendarlehen
+Ein langfristiger Kredit, der durch ein Grundstück oder Gebäude abgesichert ist. Steht auf der Passivseite beim Fremdkapital.
+
+## BGA
+auch: Betriebs- und Geschäftsausstattung
+Gegenstände für Büro und Betrieb, die länger genutzt werden – z. B. Büromöbel, Computer, eine Schreibmaschine. Gehört zum Anlagevermögen.
+
+## RHB
+auch: Roh-, Hilfs- und Betriebsstoffe
+Material für die Produktion: Rohstoffe (Hauptbestandteil, z. B. Holz), Hilfsstoffe (Nebenbestandteil, z. B. Leim) und Betriebsstoffe (für den Betrieb der Maschinen, z. B. Öl). Gehört zum Umlaufvermögen.
+
+## Zielkauf
+auch: auf Ziel
+Kauf, bei dem erst später bezahlt wird. Bis zur Zahlung entsteht eine Verbindlichkeit (beim Käufer) bzw. eine Forderung (beim Verkäufer).
+
+**Beispiel:** Kauf einer Schreibmaschine auf Ziel: **BGA an Verbindlichkeiten aLuL**.
+
+## Anfangsbestand
+Der Bestand eines Kontos zu Beginn des Jahres – übernommen aus der Eröffnungsbilanz.
+
+## Schlussbestand
+Der Bestand eines Kontos am Jahresende. Er gleicht das Konto aus (steht auf der kleineren Seite) und geht ins Schlussbilanzkonto.
+
+## Einzelunternehmen
+auch: Einzelunternehmer
+Ein Unternehmen, das **einer Person** gehört. Der Inhaber haftet mit seinem ganzen Vermögen und kann Geld entnehmen oder einlegen (Privatkonto).
+
+## Privatkonto
+Unterkonto des Eigenkapitals bei Einzelunternehmen. Im Soll stehen die Privatentnahmen, im Haben die Privateinlagen. Abschluss über das Eigenkapitalkonto – **nicht** über die GuV.
+
+## Privatentnahme
+auch: Privatentnahmen, Entnahme, Entnahmen
+Der Inhaber nimmt Geld oder Sachen für private Zwecke aus dem Unternehmen. Mindert das Eigenkapital, ist aber **kein Aufwand**.
+
+**Beispiel:** Private Miete vom Geschäftskonto: **Privat an Bank**.
+
+## Privateinlage
+auch: Privateinlagen, Einlage, Einlagen
+Der Inhaber bringt privates Geld oder Sachen ins Unternehmen. Erhöht das Eigenkapital, ist aber **kein Ertrag**.
+
+**Beispiel:** Einkommensteuer-Erstattung aufs Geschäftskonto: **Bank an Privat**.
+
+## erfolgswirksam
+auch: erfolgswirksame, erfolgswirksamen
+Ein Geschäftsvorfall, der Aufwand oder Ertrag auslöst und damit den Gewinn verändert – z. B. Miete zahlen, Zinsen bekommen.
+
+## erfolgsneutral
+auch: erfolgsneutrale, erfolgsneutralen
+Ein Geschäftsvorfall, der nur Bestandskonten verändert und den Gewinn nicht beeinflusst – z. B. Kredit tilgen, Barabhebung, Kauf auf Ziel.
+
+## Tilgung
+Die Rückzahlung eines Kredits. Erfolgsneutral: Bank und Schulden sinken um denselben Betrag. Nur die **Zinsen** sind Aufwand.
+
+## Eigenkapitalvergleich
+Gewinn aus der Veränderung des Eigenkapitals berechnen: Gewinn = EK Ende − EK Anfang + Entnahmen − Einlagen.

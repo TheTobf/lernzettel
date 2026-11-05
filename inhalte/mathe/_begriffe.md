@@ -303,3 +303,179 @@ Eine Liste von Zahlen, untereinander geschrieben, z. B. $\begin{pmatrix} 2 \\ 5 
 ## Matrix
 auch: Matrizen
 Eine Tabelle aus Zahlen mit Zeilen und Spalten, z. B. $\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$. In der Wirtschaft z. B. für Materialverbrauch pro Produkt.
+
+## Aussage
+auch: Aussagen, elementare Aussage, zusammengesetzte Aussage
+Ein Satz, der **entweder wahr oder falsch** ist. Fragen, Aufforderungen und reine Rechenausdrücke sind keine Aussagen.
+
+**Beispiel:** „$5 < 2$“ ist eine (falsche) Aussage, „Wie spät ist es?“ nicht.
+
+## Wahrheitswert
+auch: Wahrheitswerte
+Das Ergebnis einer Aussage: „wahr“ (w) oder „falsch“ (f).
+
+## Junktor
+auch: Junktoren
+Ein logisches Verbindungswort, das Aussagen verknüpft: $\neg$ (nicht), $\land$ (und), $\lor$ (oder), $\Rightarrow$ (wenn … dann), $\Leftrightarrow$ (genau dann, wenn).
+
+## Negation
+auch: Verneinung
+Das Gegenteil einer Aussage: $\neg A$ ist wahr, wenn $A$ falsch ist.
+
+## Konjunktion
+Die „Und“-Verknüpfung $A \land B$: nur wahr, wenn **beide** Aussagen wahr sind.
+
+## Disjunktion
+Die „Oder“-Verknüpfung $A \lor B$: wahr, wenn **mindestens eine** Aussage wahr ist (auch beide).
+
+## Implikation
+auch: Implikationen
+„Wenn $A$, dann $B$“, geschrieben $A \Rightarrow B$. Sie ist **nur falsch**, wenn $A$ wahr und $B$ falsch ist – bei falschem $A$ ist sie immer wahr.
+
+## Äquivalenz
+„$A$ genau dann, wenn $B$“, geschrieben $A \Leftrightarrow B$: wahr, wenn beide Aussagen **denselben** Wahrheitswert haben.
+
+## Wahrheitstafel
+auch: Wahrheitstafeln, Wahrheitstabelle
+Eine Tabelle, die für alle Kombinationen von w und f zeigt, ob eine zusammengesetzte Aussage wahr ist. Bei $n$ Aussagen hat sie $2^n$ Zeilen.
+
+## Tautologie
+auch: Tautologien
+Eine Aussage, die **immer wahr** ist – egal, was man einsetzt. **Beispiel:** $A \lor \neg A$.
+
+## Kontradiktion
+auch: Kontradiktionen
+Eine Aussage, die **immer falsch** ist. **Beispiel:** $A \land \neg A$.
+
+## De Morgansche Regeln
+auch: De Morgan, De-Morgan-Regeln
+So verneint man „und“ und „oder“: $\neg(A \land B) = \neg A \lor \neg B$ und $\neg(A \lor B) = \neg A \land \neg B$. Aus „und“ wird „oder“ (und umgekehrt), jede Teilaussage wird verneint.
+
+## Aussageform
+auch: Aussageformen
+Ein Ausdruck mit einer Variablen, der erst durch Einsetzen zur Aussage wird.
+
+**Beispiel:** „$x > 4$“ – für $x = 5$ wahr, für $x = 2$ falsch.
+
+## Lösungsmenge
+Alle Werte aus dem Definitionsbereich, die eine Aussageform (z. B. eine Gleichung) wahr machen. Zeichen: $\mathbb{L}$.
+
+**Beispiel:** $x + 1 = 3$ hat $\mathbb{L} = \{2\}$.
+
+## allgemeingültig
+Eine Aussageform, die für **jeden** erlaubten Wert wahr ist: $\mathbb{L} = \mathbb{D}$. **Beispiel:** $x^2 \ge 0$ in $\mathbb{R}$.
+
+## unerfüllbar
+Eine Aussageform, die für **keinen** Wert wahr ist: $\mathbb{L} = \emptyset$. **Beispiel:** $x + 1 = x + 2$.
+
+## Quantor
+auch: Quantoren
+Ein Zeichen, das sagt, für wie viele Werte etwas gilt: $\forall$ („für alle“) oder $\exists$ („es gibt“).
+
+## Allquantor
+$\forall$ – „für alle“. $\forall x \in \mathbb{R}: x^2 \ge 0$ heißt „Für alle reellen $x$ gilt $x^2 \ge 0$“.
+
+## Existenzquantor
+$\exists$ – „es gibt (mindestens) ein“. $\exists x \in \mathbb{N}: x > 5$ heißt „Es gibt eine natürliche Zahl größer als 5“.
+
+## natürliche Zahlen
+auch: natürliche Zahl, natürlichen Zahlen, natürlichen Zahl
+Die Zählzahlen $1, 2, 3, \dots$ (je nach Kurs auch mit $0$). Zeichen: $\mathbb{N}$.
+
+## ganze Zahlen
+auch: ganze Zahl, ganzen Zahlen
+Die natürlichen Zahlen, die $0$ und die negativen Zahlen: $\dots, -2, -1, 0, 1, 2, \dots$ Zeichen: $\mathbb{Z}$.
+
+## rationale Zahlen
+auch: rationale Zahl, rationalen Zahlen
+Alle Zahlen, die man als Bruch $\frac{p}{q}$ ganzer Zahlen schreiben kann. Zeichen: $\mathbb{Q}$.
+
+## reelle Zahlen
+auch: reelle Zahl, reellen Zahlen, reellen Zahl
+Alle Zahlen auf dem Zahlenstrahl – auch solche wie $\sqrt{2}$ oder $\pi$. Zeichen: $\mathbb{R}$.
+
+## irrational
+auch: irrationale Zahl, irrationale Zahlen
+Eine reelle Zahl, die man **nicht** als Bruch schreiben kann. **Beispiel:** $\sqrt{2}$, $\pi$.
+
+## gerade Zahl
+auch: gerade Zahlen, ungerade Zahl, ungerade Zahlen, ungerade
+Gerade: durch 2 teilbar, also $n = 2m$. Ungerade: $n = 2m + 1$. Mit diesen Schreibweisen kann man allgemein rechnen statt mit Beispielen.
+
+## Intervall
+auch: Intervalle
+Ein zusammenhängender Abschnitt auf dem Zahlenstrahl. Eckige Klammer: Rand gehört dazu; runde Klammer: Rand gehört nicht dazu.
+
+**Beispiel:** $(0;\, 3]$ = alle Zahlen größer als $0$ und höchstens $3$.
+
+## Vermutung
+Eine Aussage, von der man noch nicht weiß, ob sie wahr ist – sie ist noch nicht bewiesen.
+
+## mathematischer Satz
+auch: Theorem, Proposition
+Eine Aussage, die durch einen Beweis als wahr nachgewiesen ist.
+
+## Lemma
+auch: Hilfssatz
+Ein kleiner Satz, der als Zwischenschritt für einen größeren Satz dient.
+
+## Korollar
+Eine Folgerung, die sich ohne großen Aufwand aus einem bewiesenen Satz ergibt.
+
+## Beweis
+auch: Beweise
+Eine Kette logischer Schlüsse, die zeigt, dass eine Aussage **immer** stimmt. Ein paar Beispiele sind **kein** Beweis.
+
+## Voraussetzung
+auch: Prämisse
+In „wenn $A$, dann $B$“ der Teil $A$ – das, was man annehmen darf.
+
+## Behauptung
+auch: Konklusion, Schlussfolgerung
+In „wenn $A$, dann $B$“ der Teil $B$ – das, was man zeigen will.
+
+## Gegenbeispiel
+Ein einziges Beispiel, bei dem eine „für alle“-Aussage nicht stimmt. Es reicht, um die Aussage zu widerlegen.
+
+**Beispiel:** „Jede Quadratzahl ist gerade“ ist falsch – $9 = 3^2$ ist ungerade.
+
+## direkter Beweis
+auch: Abtrennungsregel, modus ponens
+Man startet bei der Voraussetzung und folgert Schritt für Schritt die Behauptung. Grundlage: Sind $A$ und $A \Rightarrow B$ wahr, dann ist $B$ wahr.
+
+## Kettenschluss
+Ein direkter Beweis über mehrere Zwischenschritte: $A \Rightarrow C_1 \Rightarrow C_2 \Rightarrow \dots \Rightarrow B$.
+
+## Fallunterscheidung
+Man teilt das Problem in Fälle auf, die zusammen **alle Möglichkeiten** abdecken (z. B. $x \le 0$ und $x > 0$), und beweist jeden Fall einzeln.
+
+## Widerspruchsbeweis
+auch: indirekter Beweis
+Man nimmt an, die Behauptung sei falsch, und zeigt, dass daraus ein Widerspruch folgt. Also muss die Behauptung stimmen.
+
+## Kontraposition
+Statt „wenn $A$, dann $B$“ zeigt man das gleichwertige „wenn nicht $B$, dann nicht $A$“: $(A \Rightarrow B) \Leftrightarrow (\neg B \Rightarrow \neg A)$.
+
+## vollständige Induktion
+auch: Induktion, Induktionsbeweis
+Beweisverfahren für Aussagen über alle natürlichen Zahlen: Man zeigt sie für $n = 1$ (Anfang) und dass sie von jedem $n$ auf $n + 1$ übertragen wird (Schritt) – wie Dominosteine.
+
+## Induktionsanfang
+Der erste Schritt der Induktion: Man zeigt, dass die Aussage für den Startwert (meist $n = 1$) gilt.
+
+## Induktionsannahme
+auch: Induktionsvoraussetzung
+Die Annahme im Induktionsschritt: Die Aussage gilt für ein bestimmtes $n$.
+
+## Induktionsschritt
+Der zweite Schritt der Induktion: Aus der Annahme für $n$ zeigt man, dass die Aussage auch für $n + 1$ gilt.
+
+## Äquivalenzumformung
+auch: Äquivalenzumformungen
+Eine Umformung, die eine Gleichung oder Ungleichung nicht verändert, z. B. auf beiden Seiten dieselbe Zahl addieren. Nicht erlaubt: mit $0$ multiplizieren, einfach quadrieren.
+
+## Gültigkeitsbereich
+Für welche Objekte ein Satz gelten soll. Ein Beweis muss **alle** davon abdecken, nicht nur ein paar Beispiele.
+
+## konstruktiver Beweis
+Ein Beweis, der die Lösung konkret angibt oder zeigt, wie man sie berechnet. Ein nicht-konstruktiver Beweis zeigt nur, dass es eine Lösung gibt.

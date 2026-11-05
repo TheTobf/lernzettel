@@ -206,3 +206,84 @@ Aufgaben, die man bisher selbst erledigt hat, werden an ein **fremdes** Unterneh
 
 ## Global Sourcing
 Weltweiter Einkauf: Material und Teile werden dort beschafft, wo sie am günstigsten oder besten sind.
+
+## Marktpotenzial
+Die **maximal mögliche** Absatzmenge aller Anbieter auf einem Markt – was verkauft werden **könnte**.
+
+## Marktvolumen
+Die **tatsächliche** Absatzmenge aller Anbieter auf einem Markt in einem Zeitraum – was wirklich verkauft **wird**. Immer kleiner oder gleich dem Marktpotenzial.
+
+## Marktanteil
+auch: Marktanteile
+Wie viel vom Marktvolumen auf ein Unternehmen entfällt: Absatz des Unternehmens geteilt durch Marktvolumen.
+
+**Beispiel:** 3.000 t von 60.000 t = 5 %.
+
+## Absatz
+auch: Unternehmensabsatz
+Die Menge, die ein Unternehmen tatsächlich verkauft.
+
+## Sättigungsgrad
+Wie weit ein Markt schon ausgeschöpft ist: Marktvolumen geteilt durch Marktpotenzial. Niedriger Wert = viel Wachstumspotenzial.
+
+## Marktsegmentierung
+auch: Segmentierung
+Den Gesamtmarkt in Gruppen von Kunden mit **ähnlichen Bedürfnissen** aufteilen. Tipp aus der Übung: nach **Kundenproblemen** segmentieren, nicht nach Produkten.
+
+## Zielsegment
+auch: Zielsegmente, Segment, Segmente
+Eine Kundengruppe mit bestimmten Bedürfnissen, die ein Unternehmen gezielt ansprechen will.
+
+## Zielmarktauswahl
+Entscheiden, welche Segmente bzw. Märkte man bedient – nach Größe, Wachstum, Wettbewerb und danach, ob die eigenen Stärken und Kapazitäten passen.
+
+## Wettbewerbsvorteil
+auch: Wettbewerbsvorteile
+Etwas besser machen als die Konkurrenz: auf Kundenseite **effektiver** (mehr Nutzen) und/oder auf Anbieterseite **effizienter** (günstiger).
+
+## Effektivität
+auch: effektiv, effektiver
+„Die richtigen Dinge tun“ – das Angebot trifft, was Kunden wirklich brauchen.
+
+## Effizienz
+auch: effizient, effizienter
+„Die Dinge richtig tun“ – mit möglichst wenig Aufwand bzw. Kosten herstellen.
+
+## Value Proposition Canvas
+Ein Werkzeug, um das Angebot auf den Kunden abzustimmen: Auf der Kundenseite stehen Customer Jobs, Pains und Gains, auf der Angebotsseite Pain Relievers und Gain Creators. Ziel ist der Problem-Solution Fit.
+
+## Customer Jobs
+Was der Kunde erledigen oder erreichen will – seine Aufgaben und Ziele.
+
+## Pains
+Was den Kunden ärgert, stört oder Risiken für ihn bedeutet.
+
+## Gains
+Was sich der Kunde wünscht oder was ihn freut – erhoffte Vorteile.
+
+## Pain Relievers
+auch: Pain Reliever
+Wie das Angebot die Pains des Kunden verringert.
+
+## Gain Creators
+auch: Gain Creator
+Wie das Angebot die Gains des Kunden erzeugt oder verstärkt.
+
+## Problem-Solution Fit
+auch: Problem-Solution-Fit
+Das Angebot löst nachweislich ein echtes Problem der Kunden – Pains und Gains passen zu den Pain Relievers und Gain Creators.
+
+## Empathy Map
+Ein Werkzeug, um Kunden besser zu verstehen: Was denkt und fühlt der Kunde, was sieht er, was hört er, was sagt und tut er?
+
+## CAGE-Modell
+auch: CAGE, CAGE-Distanz
+Ein Modell (Ghemawat), das die Distanz zwischen Ländern in vier Arten misst: **c**ultural (kulturell), **a**dministrative (administrativ/politisch), **g**eographic (geografisch) und **e**conomic (wirtschaftlich). Hilft bei der Frage: standardisieren oder anpassen?
+
+## Bioökonomie
+Wirtschaften mit nachwachsenden, biologischen Rohstoffen statt mit fossilen (Erdöl, Gas).
+
+**Beispiel:** traceless macht aus Agrar-Reststoffen einen Kunststoffersatz.
+
+## Scale-up
+Ein junges Unternehmen, das die Start-up-Phase hinter sich hat und jetzt schnell wächst – z. B. mit der ersten großen Produktionsanlage.
