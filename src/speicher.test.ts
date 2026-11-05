@@ -55,4 +55,8 @@ describe('Speicher', () => {
     expect(aufgabenStand(z, 'b', 4)).toEqual({ gerechnet: 3, verglichen: 2, richtig: 1 })
     expect(fuehreZusammen(leer(), z).aufgaben).toEqual(z.aufgaben)
   })
+  it('Wochenplan: nur gültige Wochentage und bekannte Fächer', () => {
+    const z = bereinige({ plan: { mathe: { uebungstage: [4, 9, 'x', 4], vorbereiten: 3 }, chemie: { uebungstage: [1] }, rewe: 'kaputt' } })
+    expect(z.plan).toEqual({ mathe: { uebungstage: [4], vorbereiten: 3 } })
+  })
 })

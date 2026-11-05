@@ -5,6 +5,7 @@ import Markdown from '../components/Markdown'
 import { datumKey, FAECHER, fachById, findeFach } from '../faecher'
 import { leseFragen } from '../fragen'
 import { anzahlAufgaben, rendere } from '../markdown'
+import { naechsterTermin } from '../plan'
 import { geheZu, pfad } from '../router'
 import { speichereEigenen, useZustand } from '../speicher'
 import { alsMarkdown, baueZettel, bezeichnung, gleicherPlatz, leseKopf, leseTyp, teileText, type Typ, type Zettel } from '../zettel'
@@ -250,7 +251,17 @@ export default function Neu({ bearbeiten }: { bearbeiten?: string }) {
           </label>
           <label className="block">
             <span className="mb-1 block px-1 text-sm font-semibold">Art</span>
-            <select value={felder.typ} onChange={(e) => setFelder({ ...felder, typ: e.target.value as Typ })} className={feld}>
+            <select
+              value={felder.typ}
+              onChange={(e) => {
+                const typ = e.target.value as Typ
+                const f = FAECHER.find((x) => x.id === felder.fach)
+                // Übungsblatt: nächsten Übungstermin aus dem Wochenplan vorschlagen
+                const termin = typ === 'blatt' && !felder.termin && f ? (naechsterTermin(f, z.plan, new Date()) ?? '') : felder.termin
+                setFelder({ ...felder, typ, termin })
+              }}
+              className={feld}
+            >
               <option value="uebung">Übung</option>
               <option value="blatt">Übungsblatt (Aufgaben)</option>
               <option value="klausur">Klausur-Lernzettel</option>

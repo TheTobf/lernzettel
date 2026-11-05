@@ -17,6 +17,9 @@ Funktioniert offline und lässt sich wie eine App auf den Startbildschirm legen.
 - **Übungsblätter zum Vorrechnen:** Die Aufgaben jedes Übungsblatts stehen unter der jeweiligen Übung – mit
   zugeklapptem Tipp und Lösungsvorschlag. Pro Aufgabe „Gerechnet“, nach dem Vergleich in der Übung „Stimmt“ oder
   „Falsch“. Am Tag vor der Übung erscheint sie oben auf der Startseite.
+- **Wochenplan:** Übungstage und Vorbereitungstag pro Fach (Mathe: Tutorium donnerstags, vorbereiten mittwochs).
+  Ab dem Vorbereitungstag erinnert die Startseite an das Übungsblatt – oder daran, dass es noch fehlt. Änderbar
+  unter „Mehr“.
 - **Fachbegriffe:** In den Lernzetteln dezent unterstrichen – antippen zeigt eine einfache Erklärung. Pro Fach gibt es
   eine Liste aller Begriffe (von den Basics an) mit Suche.
 - **Checkliste „Das kann ich“:** zum Abhaken – fängt jede Woche neu an. Alles abgehakt = Lernzettel für diese Woche erledigt.

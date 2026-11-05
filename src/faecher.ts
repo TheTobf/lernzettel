@@ -9,6 +9,12 @@ export interface Fach {
   ab?: string
   /** Weitere Schreibweisen, die beim Einfügen eines Lernzettels erkannt werden. */
   alias: string[]
+  /** Wochentage der Übung (0 = So, 1 = Mo, …, 6 = Sa) – in der App unter „Mehr“ änderbar */
+  uebungstage?: number[]
+  /** Wochentag, an dem die Übung vorbereitet wird (z. B. Übungsblatt vorrechnen) */
+  vorbereiten?: number
+  /** Gibt es jede Woche ein Übungsblatt mit Aufgaben? Dann erinnert die App, wenn es noch fehlt. */
+  blaetter?: boolean
 }
 
 export const FAECHER: Fach[] = [
@@ -19,6 +25,9 @@ export const FAECHER: Fach[] = [
     icon: '📐',
     farbe: '#2563eb',
     alias: ['mathematik', 'wirtschaftsmathematik', 'mathe-fuer-wirtschaftswissenschaftler', 'math'],
+    uebungstage: [4], // Tutorium donnerstags
+    vorbereiten: 3, // Blatt am Mittwoch vorrechnen
+    blaetter: true,
   },
   {
     id: 'externes-rechnungswesen',
@@ -27,6 +36,9 @@ export const FAECHER: Fach[] = [
     icon: '📊',
     farbe: '#059669',
     alias: ['exrewe', 'rewe', 'rechnungswesen', 'buchfuehrung', 'buchhaltung', 'externes-rewe'],
+    uebungstage: [1, 2], // montags und dienstags
+    vorbereiten: 5, // ein paar Tage vorher: freitags
+    blaetter: true,
   },
   {
     id: 'internationales-management',
@@ -35,6 +47,8 @@ export const FAECHER: Fach[] = [
     icon: '🌍',
     farbe: '#ea580c',
     alias: ['intman', 'int-management', 'international-management', 'management'],
+    uebungstage: [4], // Übung donnerstags
+    vorbereiten: 1, // ein paar Tage vorher: montags
   },
   {
     id: 'wirtschaftsinformatik',

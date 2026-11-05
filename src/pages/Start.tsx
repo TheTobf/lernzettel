@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react'
 import Ring from '../components/Ring'
+import { UebungsKarten, WochenplanKarte } from '../components/Uebungen'
 import ZettelZeile from '../components/ZettelZeile'
 import { FAECHER, fachAktiv, fachById, type Fach } from '../faecher'
 import { useAlleZettel } from '../inhalte'
 import { pfad } from '../router'
-import { anzahlAufgaben } from '../markdown'
-import { aufgabenStand, istGelesen, useZustand } from '../speicher'
+import { istGelesen, useZustand } from '../speicher'
 import { datumLang, kalenderwoche, klausurText, tageBis, wochenKey } from '../woche'
-import { gliedereFach, naechsteBlaetter, suche, wochenListe, wochenListeAlle, type Zettel } from '../zettel'
+import { gliedereFach, suche, wochenListe, wochenListeAlle, type Zettel } from '../zettel'
 
 const WOCHENTAGE = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']
 const MONATE = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
@@ -21,7 +21,6 @@ export default function Start() {
   const liste = wochenListeAlle(alle, heute)
   const erledigt = liste.filter((x) => istGelesen(z, x.id, woche)).length
   const treffer = useMemo(() => suche(alle, frage), [alle, frage])
-  const blaetter = naechsteBlaetter(alle, heute)
   const zuletzt = z.zuletzt && Date.now() - z.zuletzt.zeit < 14 * 86400000 ? alle.find((x) => x.id === z.zuletzt!.id) : undefined
 
   return (
@@ -59,33 +58,7 @@ export default function Start() {
         </section>
       ) : (
         <>
-          {blaetter.map((b) => {
-            const f = fachById(b.fach)
-            const anzahl = anzahlAufgaben(b.inhalt)
-            const st = aufgabenStand(z, b.id, anzahl)
-            const t = tageBis(heute, b.termin!)
-            const fertig = anzahl > 0 && st.gerechnet >= anzahl
-            return (
-              <a
-                key={b.id}
-                href={pfad.zettel(b.id)}
-                className="karte mb-4 flex items-center gap-4 p-4 ring-2 ring-(--fach)/40 transition active:scale-[0.99]"
-                style={{ '--fach': f?.farbe } as React.CSSProperties}
-              >
-                <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-(--fach)/12 text-3xl">{fertig ? '✅' : '📝'}</span>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs font-semibold tracking-wide text-(--fach) uppercase">
-                    {t === 0 ? 'Heute' : t === 1 ? 'Morgen' : WOCHENTAGE[new Date(`${b.termin}T12:00`).getDay()]} · {f?.kurz}-Übung {b.uebung}
-                  </div>
-                  <div className="font-bold">{fertig ? 'Alles gerechnet – nur noch vergleichen' : `Übungsblatt ${b.uebung} vorrechnen`}</div>
-                  <div className="text-sm text-stone-500 dark:text-stone-400">
-                    {st.gerechnet}/{anzahl} Aufgaben gerechnet
-                  </div>
-                </div>
-                <span className="text-stone-400">›</span>
-              </a>
-            )
-          })}
+          <UebungsKarten alle={alle} heute={heute} />
 
           <a href={pfad.woche()} className="karte mb-4 flex items-center gap-4 p-4 transition active:scale-[0.99]">
             <Ring wert={erledigt} max={liste.length} groesse={64}>
@@ -103,6 +76,8 @@ export default function Start() {
             </div>
             <span className="text-stone-400">›</span>
           </a>
+
+          <WochenplanKarte heute={heute} />
 
           {zuletzt && (
             <a href={pfad.zettel(zuletzt.id)} className="karte mb-4 flex items-center gap-3 p-4 transition active:scale-[0.99]">
