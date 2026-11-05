@@ -2,6 +2,7 @@
 titel: "Übungsblatt 3: Aussageformen, Quantoren, Beweise"
 typ: blatt
 uebung: 3
+termin: 2026-11-05
 datum: 2026-11-05
 kurz: Besprechung in KW 45 (02.11.–06.11.2026). Im Tutorium besprochen – A1 a, c · A2 a, c, e, g · A3 a, b, e, f · A4 · A5 i · A6 · A7 b · A8 · A9 · A10.
 ---

@@ -2,6 +2,7 @@
 titel: "Übungsblatt 2: Aussagen, Junktoren, Wahrheitstafeln"
 typ: blatt
 uebung: 2
+termin: 2026-10-29
 datum: 2026-11-05
 kurz: Besprechung in KW 44 (26.10.–30.10.2026). Im Tutorium besprochen – A1 a, c, e, g · A2 a–c · A3 1 alle, 2 a, d · A4 a, c · A5 · A6 a, b, d · A7 · A9 · A10.
 ---
