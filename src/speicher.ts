@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import { FAECHER } from './faecher'
 import type { FrageStat } from './fragen'
+import type { Plan } from './plan'
 import type { Zettel } from './zettel'
 import { leseTyp } from './zettel'
 
@@ -38,6 +39,8 @@ export interface Zustand {
   fragen: Record<string, FrageStat>
   /** „<Lernzettel-ID>#<Nr.>“ → eigener Stand bei der Aufgabe */
   aufgaben: Record<string, AufgabenStatus>
+  /** eigener Wochenplan pro Fach (überschreibt den Standard aus faecher.ts) */
+  plan: Record<string, Plan>
   /** Schriftgröße der Lernzettel (1 = normal) */
   schrift: number
   design: Design
@@ -47,7 +50,7 @@ export interface Zustand {
 const KEY = 'lernzettel-v1'
 
 export function leer(): Zustand {
-  return { version: 1, gelesen: {}, haken: {}, klausur: {}, eigene: [], tests: {}, fragen: {}, aufgaben: {}, schrift: 1, design: 'auto' }
+  return { version: 1, gelesen: {}, haken: {}, klausur: {}, eigene: [], tests: {}, fragen: {}, aufgaben: {}, plan: {}, schrift: 1, design: 'auto' }
 }
 
 function istObjekt(x: unknown): x is Record<string, unknown> {
@@ -104,6 +107,13 @@ export function bereinige(roh: unknown): Zustand {
   if (istObjekt(roh.aufgaben)) {
     for (const [k, v] of Object.entries(roh.aufgaben)) {
       if (AUFGABEN_STATUS.includes(v as AufgabenStatus)) z.aufgaben[k] = v as AufgabenStatus
+    }
+  }
+  if (istObjekt(roh.plan)) {
+    const tag = (n: unknown): n is number => Number.isInteger(n) && (n as number) >= 0 && (n as number) <= 6
+    for (const [fach, p] of Object.entries(roh.plan)) {
+      if (!istObjekt(p) || !Array.isArray(p.uebungstage) || !FAECHER.some((f) => f.id === fach)) continue
+      z.plan[fach] = { uebungstage: [...new Set(p.uebungstage.filter(tag))].sort(), vorbereiten: tag(p.vorbereiten) ? p.vorbereiten : undefined }
     }
   }
   if (typeof roh.schrift === 'number' && roh.schrift >= 0.8 && roh.schrift <= 1.6) z.schrift = roh.schrift
@@ -255,6 +265,15 @@ export function beantworte(key: string, richtig: boolean): void {
   })
 }
 
+export function setzePlan(fach: string, plan: Plan | null): void {
+  aendere((z) => {
+    const neu = { ...z.plan }
+    if (plan) neu[fach] = plan
+    else delete neu[fach]
+    return { ...z, plan: neu }
+  })
+}
+
 export function aufgabenKey(zettelId: string, nr: number): string {
   return `${zettelId}#${nr}`
 }
@@ -312,7 +331,7 @@ export function fuehreZusammen(z: Zustand, sicherung: Zustand): Zustand {
     const s = tests[id]
     tests[id] = s ? { ...(t.datum >= s.datum ? t : s), beste: Math.max(t.beste, s.beste), laeufe: Math.max(t.laeufe, s.laeufe) } : t
   }
-  return { ...z, gelesen, eigene, klausur: { ...z.klausur, ...sicherung.klausur }, tests, fragen: { ...sicherung.fragen, ...z.fragen }, aufgaben: { ...sicherung.aufgaben, ...z.aufgaben } }
+  return { ...z, gelesen, eigene, klausur: { ...z.klausur, ...sicherung.klausur }, tests, fragen: { ...sicherung.fragen, ...z.fragen }, aufgaben: { ...sicherung.aufgaben, ...z.aufgaben }, plan: { ...sicherung.plan, ...z.plan } }
 }
 
 export function ladeSicherung(text: string): { eigene: number; gelesen: number } {

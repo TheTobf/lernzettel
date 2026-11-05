@@ -23,6 +23,17 @@ claude.ai-Projekte kopiert. Änderungen am Format also immer dort machen.
 - Fügt der Nutzer Lernzettel-Text aus einem claude.ai-Projekt ein (beginnt mit `---` und `titel:`), diesen als Datei
   übernehmen (gleiches Fach/Übung/Teil → vorhandene Datei ersetzen).
 
+## Wochenplan des Nutzers (für `termin:` bei Übungsblättern)
+
+| Fach | Übung | vorbereiten (Standard in `src/faecher.ts`) | `termin:` = |
+|---|---|---|---|
+| Mathe | Donnerstag (Tutorium) | Mittwoch | Donnerstag der Besprechungswoche (Blatt: „Besprechung in KW …“) |
+| Externes Rechnungswesen | Montag und Dienstag | Freitag davor | Montag der Woche, in der die Übung besprochen wird |
+| Internationales Management | Donnerstag | Montag davor | Donnerstag der Übung |
+
+Der Nutzer will **ein paar Tage vorher** vorbereiten, Mathe immer **mittwochs** – neue Übungsblätter also möglichst
+schnell anlegen. Die App erinnert ab dem Vorbereitungstag auf der Startseite (eigene Änderungen unter „Mehr“).
+
 ## Wohin?
 
 Ein Lernzettel = eine Markdown-Datei in `inhalte/<fach>/`. Der Ordner bestimmt das Fach

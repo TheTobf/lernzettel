@@ -2,10 +2,11 @@ import { useState } from 'react'
 import Kopf from '../components/Kopf'
 import { FAECHER, type Fach } from '../faecher'
 import { zeigeHinweis } from '../hinweis'
+import { planFuer, standardPlan, WOCHENTAGE_KURZ, type Plan } from '../plan'
 import { projektanweisung } from '../projektanweisung'
 import { APP_ZETTEL } from '../inhalte'
 import { neuLaden } from '../pwa'
-import { ladeSicherung, setzeDesign, setzeKlausur, setzeSchrift, sicherungAlsText, useZustand, type Design } from '../speicher'
+import { ladeSicherung, setzeDesign, setzeKlausur, setzePlan, setzeSchrift, sicherungAlsText, useZustand, type Design } from '../speicher'
 import { datumLang } from '../woche'
 
 const DESIGNS: { wert: Design; text: string }[] = [
@@ -20,7 +21,7 @@ export default function Mehr() {
   const [anweisung, setAnweisung] = useState<{ fach: Fach; text: string } | null>(null)
 
   async function kopiereAnweisung(fach: Fach) {
-    const text = projektanweisung(fach)
+    const text = projektanweisung(fach, planFuer(fach, z.plan))
     try {
       await navigator.clipboard.writeText(text)
       setAnweisung(null)
@@ -57,6 +58,66 @@ export default function Mehr() {
     <div className="pb-28">
       <Kopf titel="Mehr" />
       <div className="mx-auto max-w-2xl space-y-7 px-4 pt-4">
+        <section>
+          <h2 className={ueberschrift}>🗓️ Wochenplan</h2>
+          <div className="karte divide-y divide-black/5 dark:divide-white/5">
+            {FAECHER.map((f) => {
+              const plan: Plan = planFuer(f, z.plan) ?? { uebungstage: [] }
+              const aendern = (neu: Partial<Plan>) => setzePlan(f.id, { ...plan, ...neu })
+              return (
+                <div key={f.id} className="px-4 py-3" style={{ '--fach': f.farbe } as React.CSSProperties}>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="text-xl">{f.icon}</span>
+                    <span className="min-w-0 flex-1 truncate font-medium">{f.name}</span>
+                    {z.plan[f.id] && standardPlan(f) && (
+                      <button type="button" onClick={() => setzePlan(f.id, null)} className="text-xs text-stone-500 underline">
+                        Standard
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5 text-sm">
+                    <span className="mr-1 text-xs text-stone-500">Übung:</span>
+                    {[1, 2, 3, 4, 5, 6].map((t) => {
+                      const an = plan.uebungstage.includes(t)
+                      return (
+                        <button
+                          key={t}
+                          type="button"
+                          aria-pressed={an}
+                          onClick={() => aendern({ uebungstage: an ? plan.uebungstage.filter((x) => x !== t) : [...plan.uebungstage, t].sort() })}
+                          className={`size-9 rounded-full text-xs font-semibold transition ${an ? 'bg-(--fach) text-white' : 'bg-stone-100 text-stone-500 dark:bg-nacht-3'}`}
+                        >
+                          {WOCHENTAGE_KURZ[t]}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {plan.uebungstage.length > 0 && (
+                    <label className="mt-2 flex items-center gap-2 text-sm">
+                      <span className="text-xs text-stone-500">Vorbereiten am:</span>
+                      <select
+                        value={plan.vorbereiten ?? ''}
+                        onChange={(e) => aendern({ vorbereiten: e.target.value === '' ? undefined : Number(e.target.value) })}
+                        className="rounded-lg bg-stone-100 px-2 py-1 dark:bg-nacht-3"
+                      >
+                        <option value="">–</option>
+                        {[1, 2, 3, 4, 5, 6, 0].map((t) => (
+                          <option key={t} value={t}>
+                            {WOCHENTAGE_KURZ[t]}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          <p className="mt-2 px-1 text-xs text-stone-500">
+            Ab dem Vorbereitungstag erinnert dich die Startseite an das Übungsblatt – bis zum Tag der Übung.
+          </p>
+        </section>
+
         <section>
           <h2 className={ueberschrift}>📅 Klausurtermine</h2>
           <div className="karte divide-y divide-black/5 dark:divide-white/5">
